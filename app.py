@@ -156,7 +156,7 @@ def init_db():
 
     conn.commit()
     conn.close()
-
+    init_db()
 
 # -----------------------------
 # Pages
@@ -241,5 +241,4 @@ def logout():
 # Run App
 # -----------------------------
 if __name__ == "__main__":
-    init_db()
     app.run()
