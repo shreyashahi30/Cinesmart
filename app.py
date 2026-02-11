@@ -10,6 +10,11 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
+# -----------------------------
+# SQLite Database Path Fix
+# -----------------------------
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DB_PATH = os.path.join(BASE_DIR, "users.db")
 
 # -----------------------------
 # Load Environment Variables
@@ -142,7 +147,7 @@ def search():
 # Database Init
 # -----------------------------
 def init_db():
-    conn = sqlite3.connect("users.db")
+    conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
     cursor.execute("""
@@ -194,7 +199,7 @@ def signup():
     email = request.form["email"]
     password = generate_password_hash(request.form["password"])
 
-    conn = sqlite3.connect("users.db")
+    conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
     try:
@@ -218,7 +223,7 @@ def login():
     email = request.form["email"]
     password = request.form["password"]
 
-    conn = sqlite3.connect("users.db")
+    conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM users WHERE email=?", (email,))
     user = cursor.fetchone()
