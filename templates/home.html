@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div id="movies"></div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='popular.js') }}"></script>
+{% endblock %}

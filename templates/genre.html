@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block scripts %}
+
+<script>
+    const GENRE_ID = {{ genre_id }};
+</script>
+
+<script src="{{ url_for('static', filename='genre.js') }}"></script>
+
+{% endblock %}

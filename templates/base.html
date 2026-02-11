@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CineSmart</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<!-- Sidebar -->
+<aside id="sidebar">
+    <div class="logo">
+        <h2>CINESMART</h2>
+    </div>
+
+    <div class="categories">
+        <h3>Categories</h3>
+        <ul>
+            <li><a href="/popular"><img src="{{ url_for('static', filename='popular.jpg') }}"> Popular</a></li>
+            <li><a href="/top_rated"><img src="{{ url_for('static', filename='top rated.jpg') }}"> Top Rated</a></li>
+            <li><a href="/upcoming"><img src="{{ url_for('static', filename='upcoming.jpg') }}"> Upcoming</a></li>
+        </ul>
+    </div>
+
+    <div class="genres">
+        <h3>Genres</h3>
+        <ul>
+            <li><a href="/genre/28"><img src="{{ url_for('static', filename='action.jpg') }}"> Action</a></li>
+            <li><a href="/genre/12"><img src="{{ url_for('static', filename='adventure.jpg') }}"> Adventure</a></li>
+            <li><a href="/genre/16"><img src="{{ url_for('static', filename='animation.jpg') }}"> Animation</a></li>
+            <li><a href="/genre/35"><img src="{{ url_for('static', filename='comedy.jpg') }}"> Comedy</a></li>
+            <li><a href="/genre/18"><img src="{{ url_for('static', filename='drama.jpg') }}"> Drama</a></li>
+            <li><a href="/genre/14"><img src="{{ url_for('static', filename='fantasy.jpg') }}"> Fantasy</a></li>
+            <li><a href="/genre/27"><img src="{{ url_for('static', filename='horror.jpg') }}"> Horror</a></li>
+            <li><a href="/genre/9648"><img src="{{ url_for('static', filename='mystery.jpg') }}"> Mystery</a></li>
+            <li><a href="/genre/10749"><img src="{{ url_for('static', filename='romance.jpg') }}"> Romance</a></li>
+            <li><a href="/genre/878"><img src="{{ url_for('static', filename='sci-fi.jpg') }}"> Sci-Fi</a></li>
+        </ul>
+    </div>
+</aside>
+
+<!-- Search -->
+<div id="search">
+    <input type="text" id="searchInput" placeholder="Search movies...">
+</div>
+
+<!-- Main Page Content -->
+<main style="margin-left:250px; margin-top:120px; padding:30px; width:100%;">
+    {% block content %}{% endblock %}
+</main>
+
+<!-- Modal -->
+<div id="movie-detail-modal" class="modal">
+    <div class="modal-content">
+        <span id="close-modal">&times;</span>
+        <div id="modal-body"></div>
+    </div>
+</div>
+
+<div id="auth-buttons">
+    {% if session.get("user") %}
+        <p style="color:white;">
+            Welcome, {{ session["user"] }} 👋
+        </p>
+        <a href="/logout">Logout</a>
+    {% else %}
+        <button id="login-button">Login</button>
+        <button id="signup-button">Signup</button>
+    {% endif %}
+</div>
+
+
+
+<!-- CineBot -->
+<button id="chatbot-button">CineBot</button>
+
+<script src="{{ url_for('static', filename='search.js') }}"></script>
+<script src="{{ url_for('static', filename='main.js') }}"></script>
+
+{% block scripts %}{% endblock %}
+
+<script>
+document.getElementById("chatbot-button").onclick = () => {
+    window.open(
+      "https://mediafiles.botpress.cloud/7d8c96e0-f4bf-4924-9274-f6fe28185ead/webchat/bot.html",
+      "CineBot",
+      "width=350,height=600"
+    );
+};
+</script>
+
+<!-- Signup Modal -->
+<div id="signup-modal" class="modal">
+  <div class="modal-content">
+    <span class="close" id="close-signup">&times;</span>
+
+    <h2>Signup</h2>
+    <form action="/signup" method="POST">
+      <input type="text" name="username" placeholder="Username" required><br><br>
+      <input type="email" name="email" placeholder="Email" required><br><br>
+      <input type="password" name="password" placeholder="Password" required><br><br>
+
+      <button type="submit">Signup</button>
+    </form>
+  </div>
+</div>
+
+
+<!-- Login Modal -->
+<div id="login-modal" class="modal">
+  <div class="modal-content">
+    <span class="close" id="close-login">&times;</span>
+
+    <h2>Login</h2>
+    <form action="/login" method="POST">
+      <input type="email" name="email" placeholder="Email" required><br><br>
+      <input type="password" name="password" placeholder="Password" required><br><br>
+
+      <button type="submit">Login</button>
+    </form>
+  </div>
+</div>
+
+<script>
+const loginBtn = document.getElementById("login-button");
+const signupBtn = document.getElementById("signup-button");
+
+const loginModal = document.getElementById("login-modal");
+const signupModal = document.getElementById("signup-modal");
+
+const closeLogin = document.getElementById("close-login");
+const closeSignup = document.getElementById("close-signup");
+
+if(loginBtn){
+  loginBtn.onclick = () => loginModal.style.display = "block";
+}
+
+if(signupBtn){
+  signupBtn.onclick = () => signupModal.style.display = "block";
+}
+
+closeLogin.onclick = () => loginModal.style.display = "none";
+closeSignup.onclick = () => signupModal.style.display = "none";
+
+window.onclick = function(e){
+  if(e.target === loginModal) loginModal.style.display = "none";
+  if(e.target === signupModal) signupModal.style.display = "none";
+}
+</script>
+
+</body>
+</html>
