@@ -10,11 +10,33 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
+
 # -----------------------------
 # SQLite Database Path Fix
 # -----------------------------
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.path.join(BASE_DIR, "users.db")
+
+
+# -----------------------------
+# Database Initialization
+# -----------------------------
+def init_db():
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT UNIQUE NOT NULL,
+            email TEXT UNIQUE NOT NULL,
+            password TEXT NOT NULL
+        )
+    """)
+
+    conn.commit()
+    conn.close()
+
 
 # -----------------------------
 # Load Environment Variables
@@ -27,11 +49,18 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 if not TMDB_API_KEY:
     raise ValueError("TMDB_API_KEY missing in .env file")
 
+if not SECRET_KEY:
+    raise ValueError("SECRET_KEY missing in .env file")
+
+
 # -----------------------------
 # Flask Setup
 # -----------------------------
 app = Flask(__name__)
 app.secret_key = SECRET_KEY
+
+# ✅ Initialize DB at startup (works on Render)
+init_db()
 
 
 # -----------------------------
@@ -75,7 +104,7 @@ def get_recommendations(title):
 
 
 # -----------------------------
-# TMDB Helpers
+# TMDB Helper Function
 # -----------------------------
 def tmdb_request(endpoint, params=None):
     url = f"https://api.themoviedb.org/3/{endpoint}"
@@ -86,45 +115,43 @@ def tmdb_request(endpoint, params=None):
         response = requests.get(url, params=params, timeout=8)
 
         if response.status_code != 200:
-            print("TMDB ERROR STATUS:", response.status_code)
+            print("TMDB ERROR:", response.status_code)
             return {"results": []}
 
         return response.json()
 
-    except requests.exceptions.ConnectionError:
-        print("❌ TMDB Connection failed (WinError 10054)")
-        return {"results": []}
-
     except Exception as e:
-        print("❌ TMDB Unknown error:", e)
+        print("TMDB Request Failed:", e)
         return {"results": []}
 
 
 # -----------------------------
-# API Routes (Secure)
+# API Routes
 # -----------------------------
 @app.route("/api/popular")
 def api_popular():
     return jsonify(tmdb_request("movie/popular"))
 
+
 @app.route("/api/top")
 def api_top():
     return jsonify(tmdb_request("movie/top_rated"))
+
 
 @app.route("/api/upcoming")
 def api_upcoming():
     return jsonify(tmdb_request("movie/upcoming"))
 
+
 @app.route("/api/genre/<int:genre_id>")
 def api_genre(genre_id):
-    data = tmdb_request("discover/movie", {
-        "with_genres": genre_id
-    })
-    return jsonify(data)
+    return jsonify(tmdb_request("discover/movie", {"with_genres": genre_id}))
+
 
 @app.route("/api/movie/<int:movie_id>")
 def api_movie(movie_id):
     return jsonify(tmdb_request(f"movie/{movie_id}"))
+
 
 @app.route("/search")
 def search():
@@ -144,43 +171,27 @@ def search():
 
 
 # -----------------------------
-# Database Init
-# -----------------------------
-def init_db():
-    conn = sqlite3.connect(DB_PATH)
-    cursor = conn.cursor()
-
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS users (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            username TEXT UNIQUE NOT NULL,
-            email TEXT UNIQUE NOT NULL,
-            password TEXT NOT NULL
-        )
-    """)
-
-    conn.commit()
-    conn.close()
-    init_db()
-
-# -----------------------------
 # Pages
 # -----------------------------
 @app.route("/")
 def home():
     return render_template("home.html")
 
+
 @app.route("/popular")
 def popular():
     return render_template("popular.html")
+
 
 @app.route("/top_rated")
 def top_rated():
     return render_template("top_rated.html")
 
+
 @app.route("/upcoming")
 def upcoming():
     return render_template("upcoming.html")
+
 
 @app.route("/genre/<int:genre_id>")
 def genre_page(genre_id):
@@ -188,7 +199,7 @@ def genre_page(genre_id):
 
 
 # -----------------------------
-# Auth
+# Authentication Routes
 # -----------------------------
 @app.route("/signup", methods=["GET", "POST"])
 def signup():
@@ -208,11 +219,11 @@ def signup():
             (username, email, password)
         )
         conn.commit()
-    except:
+    except sqlite3.IntegrityError:
         return "User already exists"
 
     conn.close()
-    return redirect("/")
+    return redirect("/login")
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -225,8 +236,10 @@ def login():
 
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
+
     cursor.execute("SELECT * FROM users WHERE email=?", (email,))
     user = cursor.fetchone()
+
     conn.close()
 
     if user and check_password_hash(user[3], password):
@@ -243,7 +256,7 @@ def logout():
 
 
 # -----------------------------
-# Run App
+# Run App (Local Only)
 # -----------------------------
 if __name__ == "__main__":
     app.run()
