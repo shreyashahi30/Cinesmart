@@ -202,10 +202,8 @@ def genre_page(genre_id):
 # Authentication Routes
 # -----------------------------
 @app.route("/signup", methods=["GET", "POST"])
+@app.route("/signup", methods=["POST"])
 def signup():
-    if request.method == "GET":
-        return render_template("signup.html")
-
     username = request.form["username"]
     email = request.form["email"]
     password = generate_password_hash(request.form["password"])
@@ -219,18 +217,18 @@ def signup():
             (username, email, password)
         )
         conn.commit()
-    except sqlite3.IntegrityError:
+    except:
         return "User already exists"
 
     conn.close()
-    return redirect("/login")
+
+    # ✅ After signup → open login popup
+    return redirect("/?show_login=1")
 
 
-@app.route("/login", methods=["GET", "POST"])
+
+@app.route("/login", methods=["POST"])
 def login():
-    if request.method == "GET":
-        return render_template("login.html")
-
     email = request.form["email"]
     password = request.form["password"]
 
@@ -239,14 +237,15 @@ def login():
 
     cursor.execute("SELECT * FROM users WHERE email=?", (email,))
     user = cursor.fetchone()
-
     conn.close()
 
     if user and check_password_hash(user[3], password):
         session["user"] = user[1]
         return redirect("/")
 
-    return "Invalid login"
+    # ❌ Invalid login → reopen login popup
+    return redirect("/?invalid=1")
+
 
 
 @app.route("/logout")
