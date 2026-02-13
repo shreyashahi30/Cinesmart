@@ -1,42 +1,73 @@
-fetch("/api/popular")
-  .then(res => res.json())
-  .then(data => {
-    const movies = data.results;
-    const container = document.getElementById("movies");
+document.addEventListener("DOMContentLoaded", function () {
 
-    container.innerHTML = "";
+  const container = document.getElementById("movies");
 
-    movies.forEach(movie => {
-      const card = document.createElement("div");
-      card.className = "movie-card";
+  // ✅ Prevent crash if movies div is missing
+  if (!container) {
+    console.error("Movies container not found!");
+    return;
+  }
+
+  // ✅ Load Popular Movies
+  fetch("/api/popular")
+    .then(res => res.json())
+    .then(data => {
+
+      const movies = data.results;
+      container.innerHTML = "";
+
+      movies.forEach(movie => {
+        const card = document.createElement("div");
+        card.className = "movie-card";
+
+        const poster = movie.poster_path
+          ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
+          : "/static/default.jpg";
+
+        card.innerHTML = `
+          <img src="${poster}">
+          <h3>${movie.title}</h3>
+          <p>⭐ ${movie.vote_average}</p>
+        `;
+
+        // ✅ Click opens modal
+        card.onclick = () => openMovie(movie.id);
+
+        container.appendChild(card);
+      });
+    });
+
+});
+
+
+// ✅ Movie Detail Modal Function
+function openMovie(id) {
+  fetch(`/api/movie/${id}`)
+    .then(res => res.json())
+    .then(movie => {
 
       const poster = movie.poster_path
         ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
         : "/static/default.jpg";
 
-      card.innerHTML = `
-        <img src="${poster}">
-        <h3>${movie.title}</h3>
-        <p>⭐ ${movie.vote_average}</p>
-      `;
-
-      card.onclick = () => openMovie(movie.id);
-      container.appendChild(card);
-    });
-  });
-
-function openMovie(id) {
-  fetch(`/api/movie/${id}`)
-    .then(res => res.json())
-    .then(movie => {
       document.getElementById("modal-body").innerHTML = `
         <h2>${movie.title}</h2>
+        <img src="${poster}" style="width:200px; border-radius:10px; margin:15px 0;">
         <p>${movie.overview}</p>
       `;
+
       document.getElementById("movie-detail-modal").style.display = "block";
     });
 }
 
-document.getElementById("close-modal").onclick = () => {
-  document.getElementById("movie-detail-modal").style.display = "none";
-};
+
+// ✅ Close Modal Button Fix
+document.addEventListener("DOMContentLoaded", function () {
+  const closeBtn = document.getElementById("close-modal");
+
+  if (closeBtn) {
+    closeBtn.onclick = () => {
+      document.getElementById("movie-detail-modal").style.display = "none";
+    };
+  }
+});
