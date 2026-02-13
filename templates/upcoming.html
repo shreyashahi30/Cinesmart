@@ -1,5 +1,11 @@
 {% extends "base.html" %}
 
+{% block content %}
+<h2 style="text-align:center;">Upcoming Movies</h2>
+
+<div id="movies"></div>
+{% endblock %}
+
 {% block scripts %}
 <script src="{{ url_for('static', filename='upcoming.js') }}"></script>
 {% endblock %}
