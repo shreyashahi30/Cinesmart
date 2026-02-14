@@ -13,15 +13,34 @@
         <h2>CINESMART</h2>
     </div>
 
+    <!-- Categories -->
     <div class="categories">
         <h3>Categories</h3>
         <ul>
-            <li><a href="/popular"><img src="{{ url_for('static', filename='popular.jpg') }}"> Popular</a></li>
-            <li><a href="/top_rated"><img src="{{ url_for('static', filename='top rated.jpg') }}"> Top Rated</a></li>
-            <li><a href="/upcoming"><img src="{{ url_for('static', filename='upcoming.jpg') }}"> Upcoming</a></li>
+            <li>
+                <a href="/popular">
+                    <img src="{{ url_for('static', filename='popular.jpg') }}">
+                    Popular
+                </a>
+            </li>
+
+            <li>
+                <a href="/top_rated">
+                    <img src="{{ url_for('static', filename='top rated.jpg') }}">
+                    Top Rated
+                </a>
+            </li>
+
+            <li>
+                <a href="/upcoming">
+                    <img src="{{ url_for('static', filename='upcoming.jpg') }}">
+                    Upcoming
+                </a>
+            </li>
         </ul>
     </div>
 
+    <!-- Genres -->
     <div class="genres">
         <h3>Genres</h3>
         <ul>
@@ -44,12 +63,12 @@
     <input type="text" id="searchInput" placeholder="Search movies...">
 </div>
 
-<!-- Main Page Content -->
+<!-- Main Content -->
 <main style="margin-left:250px; margin-top:120px; padding:30px; width:100%;">
     {% block content %}{% endblock %}
 </main>
 
-<!-- Modal -->
+<!-- Movie Detail Modal -->
 <div id="movie-detail-modal" class="modal">
     <div class="modal-content">
         <span id="close-modal">&times;</span>
@@ -57,6 +76,7 @@
     </div>
 </div>
 
+<!-- Auth Buttons -->
 <div id="auth-buttons">
     {% if session.get("user") %}
         <p style="color:white;">
@@ -69,25 +89,14 @@
     {% endif %}
 </div>
 
-
-
-<!-- CineBot -->
+<!-- CineBot Button -->
 <button id="chatbot-button">CineBot</button>
 
+<!-- Scripts -->
 <script src="{{ url_for('static', filename='search.js') }}"></script>
 <script src="{{ url_for('static', filename='main.js') }}"></script>
 
 {% block scripts %}{% endblock %}
-
-<script>
-document.getElementById("chatbot-button").onclick = () => {
-    window.open(
-      "https://mediafiles.botpress.cloud/7d8c96e0-f4bf-4924-9274-f6fe28185ead/webchat/bot.html",
-      "CineBot",
-      "width=350,height=600"
-    );
-};
-</script>
 
 <!-- Signup Modal -->
 <div id="signup-modal" class="modal">
@@ -105,7 +114,6 @@ document.getElementById("chatbot-button").onclick = () => {
   </div>
 </div>
 
-
 <!-- Login Modal -->
 <div id="login-modal" class="modal">
   <div class="modal-content">
@@ -121,31 +129,87 @@ document.getElementById("chatbot-button").onclick = () => {
   </div>
 </div>
 
+<!-- Dialogflow Chatbot Modal -->
+<div id="chatbot-modal" class="modal">
+  <div class="modal-content" style="width:400px; height:550px;">
+
+    <span id="close-chatbot" style="cursor:pointer; font-size:25px;">
+      &times;
+    </span>
+
+    <iframe
+      height="480"
+      width="370"
+      style="border:none;"
+      src="https://bot.dialogflow.com/6e8067d1-9c19-42eb-8f77-80babcc63bde">
+    </iframe>
+
+  </div>
+</div>
+
+<!-- ✅ Final Combined Script -->
 <script>
-const loginBtn = document.getElementById("login-button");
-const signupBtn = document.getElementById("signup-button");
+document.addEventListener("DOMContentLoaded", function () {
 
-const loginModal = document.getElementById("login-modal");
-const signupModal = document.getElementById("signup-modal");
+  // Buttons
+  const loginBtn = document.getElementById("login-button");
+  const signupBtn = document.getElementById("signup-button");
+  const chatbotBtn = document.getElementById("chatbot-button");
 
-const closeLogin = document.getElementById("close-login");
-const closeSignup = document.getElementById("close-signup");
+  // Modals
+  const loginModal = document.getElementById("login-modal");
+  const signupModal = document.getElementById("signup-modal");
+  const chatbotModal = document.getElementById("chatbot-modal");
 
-if(loginBtn){
-  loginBtn.onclick = () => loginModal.style.display = "block";
-}
+  // Close Buttons
+  const closeLogin = document.getElementById("close-login");
+  const closeSignup = document.getElementById("close-signup");
+  const closeChatbot = document.getElementById("close-chatbot");
 
-if(signupBtn){
-  signupBtn.onclick = () => signupModal.style.display = "block";
-}
+  // ✅ Open Login
+  if (loginBtn) {
+    loginBtn.onclick = () => loginModal.style.display = "block";
+  }
 
-closeLogin.onclick = () => loginModal.style.display = "none";
-closeSignup.onclick = () => signupModal.style.display = "none";
+  // ✅ Open Signup
+  if (signupBtn) {
+    signupBtn.onclick = () => signupModal.style.display = "block";
+  }
 
-window.onclick = function(e){
-  if(e.target === loginModal) loginModal.style.display = "none";
-  if(e.target === signupModal) signupModal.style.display = "none";
-}
+  // ✅ Open Chatbot
+  if (chatbotBtn) {
+    chatbotBtn.onclick = () => chatbotModal.style.display = "block";
+  }
+
+  // ✅ Close Login
+  if (closeLogin) {
+    closeLogin.onclick = () => loginModal.style.display = "none";
+  }
+
+  // ✅ Close Signup
+  if (closeSignup) {
+    closeSignup.onclick = () => signupModal.style.display = "none";
+  }
+
+  // ✅ Close Chatbot
+  if (closeChatbot) {
+    closeChatbot.onclick = () => chatbotModal.style.display = "none";
+  }
+
+  // ✅ Close when clicking outside
+  window.onclick = function (e) {
+
+    if (e.target === loginModal)
+      loginModal.style.display = "none";
+
+    if (e.target === signupModal)
+      signupModal.style.display = "none";
+
+    if (e.target === chatbotModal)
+      chatbotModal.style.display = "none";
+  };
+
+});
 </script>
 
 </body>
