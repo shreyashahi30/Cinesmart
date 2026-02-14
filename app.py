@@ -253,6 +253,116 @@ def logout():
     session.pop("user", None)
     return redirect("/")
 
+# -----------------------------
+# Dialogflow Chatbot Webhook
+# -----------------------------
+@app.route("/chatbot", methods=["POST"])
+def chatbot():
+    req = request.get_json()
+
+    intent = req["queryResult"]["intent"]["displayName"]
+    params = req["queryResult"]["parameters"]
+
+    # ✅ TMDB Genre Mapping
+    genre_map = {
+        "action": 28,
+        "adventure": 12,
+        "animation": 16,
+        "comedy": 35,
+        "drama": 18,
+        "fantasy": 14,
+        "horror": 27,
+        "mystery": 9648,
+        "romance": 10749,
+        "sci-fi": 878
+    }
+
+    # -----------------------------------
+    # ✅ Genre Recommendation Intent
+    # -----------------------------------
+    if intent == "Recommend_By_Genre":
+
+        genre = params.get("genre")
+
+        # ✅ Dialogflow sometimes sends genre as a list
+        if isinstance(genre, list):
+            genre = genre[0]
+
+        if not genre:
+            return jsonify({
+                "fulfillmentText": "Please tell me a genre like action, comedy, horror..."
+            })
+
+        # Convert genre → TMDB ID
+        genre_id = genre_map.get(genre.lower())
+
+        if not genre_id:
+            return jsonify({
+                "fulfillmentText": f"Sorry, I don’t support genre: {genre}"
+            })
+
+        # Fetch top movies from TMDB
+        movies_data = tmdb_request("discover/movie", {
+            "with_genres": genre_id,
+            "sort_by": "popularity.desc"
+        })
+
+        movies = movies_data.get("results", [])[:5]
+
+        if not movies:
+            return jsonify({
+                "fulfillmentText": f"Sorry, I couldn’t find {genre} movies right now."
+            })
+
+        # Build Reply
+        reply = f"🎬 Top {genre.title()} Movies:\n\n"
+
+        for m in movies:
+            reply += f"⭐ {m['title']} ({m['vote_average']}/10)\n"
+
+        return jsonify({
+            "fulfillmentText": reply
+        })
+
+    # -----------------------------------
+    # ✅ Similar Movie Recommendation Intent
+    # -----------------------------------
+    if intent == "Recommend_Similar_Movie":
+
+        movie_name = params.get("movie")
+
+        # Dialogflow may send movie as list too
+        if isinstance(movie_name, list):
+            movie_name = movie_name[0]
+
+        if not movie_name:
+            return jsonify({
+                "fulfillmentText": "Tell me a movie name like Avatar or Titanic."
+            })
+
+        recs = get_recommendations(movie_name)
+
+        if not recs:
+            return jsonify({
+                "fulfillmentText": f"Sorry, I couldn’t find movies like {movie_name}."
+            })
+
+        reply = f"🎥 Movies similar to {movie_name.title()}:\n\n"
+
+        for r in recs:
+            reply += f"🎬 {r.title()}\n"
+
+        return jsonify({
+            "fulfillmentText": reply
+        })
+
+    # -----------------------------------
+    # Default fallback
+    # -----------------------------------
+    return jsonify({
+        "fulfillmentText": "Try asking: recommend horror movies or recommend movies like Avatar."
+    })
+
 
 # -----------------------------
 # Run App (Local Only)
