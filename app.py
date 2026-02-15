@@ -1,48 +1,39 @@
 import os
-from dotenv import load_dotenv
-
-from flask import Flask, request, jsonify, render_template
-import pandas as pd
+import sqlite3
 import requests
+import pandas as pd
+
+from dotenv import load_dotenv
+from flask import Flask, request, jsonify, render_template, redirect, session
+from werkzeug.security import generate_password_hash, check_password_hash
 
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
-import sqlite3
-from werkzeug.security import generate_password_hash, check_password_hash
-from flask import session, redirect, flash
-
 
 
 # -----------------------------
 # Load Environment Variables
 # -----------------------------
 load_dotenv()
-
 TMDB_API_KEY = os.getenv("TMDB_API_KEY")
 
 if not TMDB_API_KEY:
-    raise ValueError("❌ TMDB_API_KEY not found. Add it in your .env file")
+    raise ValueError("TMDB_API_KEY not found in .env file")
 
 
 # -----------------------------
-# Flask App Setup
+# Flask Setup
 # -----------------------------
 app = Flask(__name__)
 app.secret_key = "cinesmart_secret_key"
-
-
-
 
 
 # -----------------------------
 # Load Dataset
 # -----------------------------
 data = pd.read_csv("final_data.csv")
-print("✅ CSV Loaded Successfully")
-
 data["movie_title"] = data["movie_title"].str.lower()
 
-# Combine features for recommendation
 data["comb"] = (
     data["director_name"].fillna("") + " " +
     data["actor_1_name"].fillna("") + " " +
@@ -51,64 +42,46 @@ data["comb"] = (
     data["genres"].fillna("")
 )
 
-# TF-IDF Vectorization
-vectorizer = TfidfVectorizer(
-    max_features=5000,
-    stop_words="english",
-    ngram_range=(1, 2)
-)
-
-X_vectorized = vectorizer.fit_transform(data["comb"])
-
-# Cosine Similarity
-cosine_sim = cosine_similarity(X_vectorized, X_vectorized)
+vectorizer = TfidfVectorizer(stop_words="english", max_features=5000)
+X = vectorizer.fit_transform(data["comb"])
+cosine_sim = cosine_similarity(X)
 
 
 # -----------------------------
 # Recommendation Function
 # -----------------------------
-def get_recommendations(movie_title):
-    movie_title = movie_title.lower()
+def get_recommendations(title):
+    title = title.lower()
 
-    if movie_title not in data["movie_title"].values:
+    if title not in data["movie_title"].values:
         return []
 
-    idx = data.index[data["movie_title"] == movie_title][0]
+    idx = data.index[data["movie_title"] == title][0]
+    scores = list(enumerate(cosine_sim[idx]))
 
-    sim_scores = list(enumerate(cosine_sim[idx]))
-    sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
+    scores = sorted(scores, key=lambda x: x[1], reverse=True)
+    top_movies = scores[1:6]
 
-    top_movies = sim_scores[1:10]  # skip itself
-    movie_indices = [i[0] for i in top_movies]
-
-    return data["movie_title"].iloc[movie_indices].tolist()
+    return [data["movie_title"].iloc[i[0]] for i in top_movies]
 
 
 # -----------------------------
-# TMDB Fetch Function
+# TMDB Movie Fetch
 # -----------------------------
 def fetch_tmdb_movie(title):
-    try:
-        url = "https://api.themoviedb.org/3/search/movie"
-        params = {"api_key": TMDB_API_KEY, "query": title}
+    url = "https://api.themoviedb.org/3/search/movie"
+    params = {"api_key": TMDB_API_KEY, "query": title}
 
-        response = requests.get(url, params=params, timeout=5)
+    res = requests.get(url, params=params)
+    results = res.json().get("results", [])
 
-        if response.status_code != 200:
-            return None
-
-        results = response.json().get("results", [])
-        return results[0] if results else None
-
-    except Exception as e:
-        print("❌ TMDB ERROR:", e)
-        return None
+    return results[0] if results else None
 
 
 # -----------------------------
-# Search API Route
+# Search API
 # -----------------------------
-@app.route("/search", methods=["GET"])
+@app.route("/search")
 def search():
     query = request.args.get("query")
 
@@ -116,24 +89,22 @@ def search():
         return jsonify([])
 
     recommendations = get_recommendations(query)
-
     results = []
 
-    # First show searched movie
-    first_movie = fetch_tmdb_movie(query)
-    if first_movie:
-        results.append(first_movie)
+    first = fetch_tmdb_movie(query)
+    if first:
+        results.append(first)
 
-    # Then show recommendations
-    for title in recommendations[:5]:
-        movie = fetch_tmdb_movie(title)
+    for rec in recommendations:
+        movie = fetch_tmdb_movie(rec)
         if movie:
             results.append(movie)
 
     return jsonify(results)
 
+
 # -----------------------------
-# Database Intialization
+# Database Setup
 # -----------------------------
 def init_db():
     conn = sqlite3.connect("users.db")
@@ -142,21 +113,22 @@ def init_db():
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            username TEXT NOT NULL,
-            email TEXT UNIQUE NOT NULL,
-            password TEXT NOT NULL
+            username TEXT,
+            email TEXT UNIQUE,
+            password TEXT
         )
     """)
 
     conn.commit()
     conn.close()
 
+
 # -----------------------------
-# Main Pages Routes
+# Main Pages
 # -----------------------------
 @app.route("/")
 def home():
-    return render_template("mi.html")
+    return render_template("home.html")
 
 
 @app.route("/popular")
@@ -175,7 +147,7 @@ def upcoming():
 
 
 # -----------------------------
-# ✅ Genre Routes (FIXED)
+# Genre Pages (Separate Templates)
 # -----------------------------
 @app.route("/action")
 def action():
@@ -226,37 +198,38 @@ def romance():
 def scifi():
     return render_template("scifi.html")
 
-@app.route("/signup", methods=["GET", "POST"])
+
+# -----------------------------
+# Signup
+# -----------------------------
+@app.route("/signup", methods=["POST"])
 def signup():
     username = request.form.get("username")
     email = request.form.get("email")
     password = request.form.get("password")
 
-    # Check if empty
-    if not username or not email or not password:
-        return "All fields are required!"
+    hashed_pw = generate_password_hash(password)
 
-    # Hash password
-    hashed_password = generate_password_hash(password)
+    conn = sqlite3.connect("users.db")
+    cursor = conn.cursor()
 
     try:
-        conn = sqlite3.connect("users.db")
-        cursor = conn.cursor()
-
         cursor.execute(
             "INSERT INTO users (username, email, password) VALUES (?, ?, ?)",
-            (username, email, hashed_password)
+            (username, email, hashed_pw)
         )
-
         conn.commit()
-        conn.close()
+    except:
+        return "Email already exists"
 
-        return redirect("/")
+    conn.close()
+    return redirect("/")
 
-    except sqlite3.IntegrityError:
-        return "Email already registered!"
 
-@app.route("/login", methods=["GET", "POST"])
+# -----------------------------
+# Login
+# -----------------------------
+@app.route("/login", methods=["POST"])
 def login():
     email = request.form.get("email")
     password = request.form.get("password")
@@ -266,16 +239,18 @@ def login():
 
     cursor.execute("SELECT * FROM users WHERE email = ?", (email,))
     user = cursor.fetchone()
-
     conn.close()
 
-    # If user exists and password matches
     if user and check_password_hash(user[3], password):
-        session["user"] = user[1]  # username
+        session["user"] = user[1]
         return redirect("/")
 
-    return "Invalid email or password!"
+    return "Invalid credentials"
 
+
+# -----------------------------
+# Logout
+# -----------------------------
 @app.route("/logout")
 def logout():
     session.pop("user", None)
@@ -283,11 +258,8 @@ def logout():
 
 
 # -----------------------------
-# Run Locally
+# Run App
 # -----------------------------
 if __name__ == "__main__":
     init_db()
     app.run(debug=True)
-
-
-
