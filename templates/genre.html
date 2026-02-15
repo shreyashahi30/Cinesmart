@@ -1,14 +1,12 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h2 style="text-align:center;">Genre Movies</h2>
-
 <div id="movies"></div>
 {% endblock %}
 
 {% block scripts %}
 <script>
-    const GENRE_ID = {{ genre_id }};
+  const GENRE_ID = {{ genre_id }};
 </script>
 
 <script src="{{ url_for('static', filename='genre.js') }}"></script>
