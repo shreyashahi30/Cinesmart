@@ -58,15 +58,18 @@
     </div>
 </aside>
 
-<!-- Search -->
+
+<!-- Search Bar -->
 <div id="search">
     <input type="text" id="searchInput" placeholder="Search movies...">
 </div>
+
 
 <!-- Main Content -->
 <main style="margin-left:250px; margin-top:120px; padding:30px; width:100%;">
     {% block content %}{% endblock %}
 </main>
+
 
 <!-- Movie Detail Modal -->
 <div id="movie-detail-modal" class="modal">
@@ -75,6 +78,7 @@
         <div id="modal-body"></div>
     </div>
 </div>
+
 
 <!-- Auth Buttons -->
 <div id="auth-buttons">
@@ -89,14 +93,10 @@
     {% endif %}
 </div>
 
+
 <!-- CineBot Button -->
 <button id="chatbot-button">CineBot</button>
 
-<!-- Scripts -->
-<script src="{{ url_for('static', filename='search.js') }}"></script>
-<script src="{{ url_for('static', filename='main.js') }}"></script>
-
-{% block scripts %}{% endblock %}
 
 <!-- Signup Modal -->
 <div id="signup-modal" class="modal">
@@ -114,6 +114,7 @@
   </div>
 </div>
 
+
 <!-- Login Modal -->
 <div id="login-modal" class="modal">
   <div class="modal-content">
@@ -128,6 +129,7 @@
     </form>
   </div>
 </div>
+
 
 <!-- Dialogflow Chatbot Modal -->
 <div id="chatbot-modal" class="modal">
@@ -147,7 +149,15 @@
   </div>
 </div>
 
-<!-- ✅ Final Combined Script -->
+
+<!-- Global Scripts -->
+<script src="{{ url_for('static', filename='search.js') }}"></script>
+
+<!-- Page Specific Scripts -->
+{% block scripts %}{% endblock %}
+
+
+<!-- Modal + Chatbot Controller Script -->
 <script>
 document.addEventListener("DOMContentLoaded", function () {
 
@@ -160,43 +170,29 @@ document.addEventListener("DOMContentLoaded", function () {
   const loginModal = document.getElementById("login-modal");
   const signupModal = document.getElementById("signup-modal");
   const chatbotModal = document.getElementById("chatbot-modal");
+  const movieModal = document.getElementById("movie-detail-modal");
 
   // Close Buttons
   const closeLogin = document.getElementById("close-login");
   const closeSignup = document.getElementById("close-signup");
   const closeChatbot = document.getElementById("close-chatbot");
+  const closeMovie = document.getElementById("close-modal");
 
-  // ✅ Open Login
-  if (loginBtn) {
-    loginBtn.onclick = () => loginModal.style.display = "block";
-  }
 
-  // ✅ Open Signup
-  if (signupBtn) {
-    signupBtn.onclick = () => signupModal.style.display = "block";
-  }
+  // ✅ Open Modals
+  if (loginBtn) loginBtn.onclick = () => loginModal.style.display = "block";
+  if (signupBtn) signupBtn.onclick = () => signupModal.style.display = "block";
+  if (chatbotBtn) chatbotBtn.onclick = () => chatbotModal.style.display = "block";
 
-  // ✅ Open Chatbot
-  if (chatbotBtn) {
-    chatbotBtn.onclick = () => chatbotModal.style.display = "block";
-  }
 
-  // ✅ Close Login
-  if (closeLogin) {
-    closeLogin.onclick = () => loginModal.style.display = "none";
-  }
+  // ✅ Close Modals
+  if (closeLogin) closeLogin.onclick = () => loginModal.style.display = "none";
+  if (closeSignup) closeSignup.onclick = () => signupModal.style.display = "none";
+  if (closeChatbot) closeChatbot.onclick = () => chatbotModal.style.display = "none";
+  if (closeMovie) closeMovie.onclick = () => movieModal.style.display = "none";
 
-  // ✅ Close Signup
-  if (closeSignup) {
-    closeSignup.onclick = () => signupModal.style.display = "none";
-  }
 
-  // ✅ Close Chatbot
-  if (closeChatbot) {
-    closeChatbot.onclick = () => chatbotModal.style.display = "none";
-  }
-
-  // ✅ Close when clicking outside
+  // ✅ Close when clicking outside modal
   window.onclick = function (e) {
 
     if (e.target === loginModal)
@@ -207,6 +203,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (e.target === chatbotModal)
       chatbotModal.style.display = "none";
+
+    if (e.target === movieModal)
+      movieModal.style.display = "none";
   };
 
 });

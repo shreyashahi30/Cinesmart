@@ -10,6 +10,7 @@ document.addEventListener("DOMContentLoaded", function () {
       container.innerHTML = "";
 
       data.results.forEach(movie => {
+
         const card = document.createElement("div");
         card.className = "movie-card";
 
@@ -23,7 +24,8 @@ document.addEventListener("DOMContentLoaded", function () {
           <p>⭐ ${movie.vote_average}</p>
         `;
 
-        card.onclick = () => openMovie(movie.id);
+        card.addEventListener("click", () => openMovie(movie.id));
+
         container.appendChild(card);
       });
     });

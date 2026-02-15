@@ -1,0 +1,458 @@
+/* Reset some basic elements */
+body, h1, h2, h3, p, ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: url('background image.jpg') no-repeat center center fixed;
+    background-size: cover;
+    color: #fff;
+    display: flex;
+    min-height: 100vh;
+    position: relative;
+    margin: 0;
+    padding: 0;
+}
+
+/* Header */
+.header {
+    background-color: black;
+    width: 100%;
+    padding: 20px;
+    text-align: center;
+    color: white;
+    position: absolute;
+    /*z-index: 2; /* Ensures header is above the overlay */
+}
+
+/* Header container */
+#header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    background-color: #333;
+    height: 100%;
+}
+
+/* Sidebar */
+#sidebar {
+    width: 200px;
+    background-color: black;
+    padding: 10px;
+    min-height: 100vh; /* Make the sidebar at least the full height of the viewport */
+    box-sizing: border-box; /* Ensure padding is included in height calculation */
+    overflow-y: auto; 
+    top: 0; /* Align the sidebar to the top of the viewport */
+    left: 0; /* Align the sidebar to the left of the viewport */
+    position: fixed;
+    z-index: 1500;
+}
+#sidebar-container {
+    ::-webkit-scrollbar {
+        width: 50px; /* Adjust the width as needed */
+    }
+    ::-webkit-scrollbar-thumb {
+        background-color: #888; /* Customize the thumb color */
+    }
+}
+#sidebar-content {
+    display: flex;
+    flex-direction: column;
+    top: 0px;
+    width: 100%;
+    padding: 0 0 20px 0;
+    height: calc(100vh - 40px);
+}
+
+/* Line below CINESMART */
+#sidebar-content .logo h2 {
+    border-bottom: 1px solid rgba(128, 128, 128, 0.5); /* Grey transparent border */
+    padding-bottom: 30px;
+    width: 100%; /* Ensure it spans the full width of the sidebar */
+}
+
+/* Transparent partition between categories and genres */
+#sidebar-content .categories,
+#sidebar-content .genres {
+    border-bottom: 1px solid rgba(128, 128, 128, 0.5); /* Grey transparent border */
+    padding-bottom: 30px;
+    width: 100%; /* Ensure it spans the full width of the sidebar */
+}
+
+/* Icon styling */
+#sidebar-content .categories ul li,
+#sidebar-content .genres ul li {
+    list-style: none; /* Remove default bullet points */
+}
+
+#sidebar-content .categories ul li a,
+#sidebar-content .genres ul li a {
+    display: flex; /* Create a flex container */
+    align-items: center; /* Center items vertically */
+}
+
+#sidebar-content .categories ul li a img,
+#sidebar-content .genres ul li a img {
+    width: 30px; /* Adjust the width as needed */
+    height: 30px; /* Adjust the height as needed */
+    margin-right: 10px; /* Add spacing between icon and text */
+}
+
+.logo h2 {
+    color: #ff0000d0;
+    font-size: 25px;
+    font-weight: bolder;
+    margin-bottom: 30px;
+    padding: 0 0 10px 0;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    text-transform: uppercase; 
+    margin-bottom: 10px; 
+    letter-spacing: 2px; 
+    text-align: center;
+    display: inline-block; 
+    transform: perspective(500px) rotateX(20deg); 
+    font-family: 'Arial', sans-serif;
+    margin-top: 20px;
+}
+
+
+/* Hover effect for the logo text */
+.logo h2:hover {
+    transform: perspective(500px) rotateX(20deg) scale(1.05); /* Slight zoom effect */
+    color: #ffffff; /* Change color on hover */
+    text-shadow: 2px 2px 10px rgba(255, 255, 255, 0.7); /* Lighter shadow on hover */
+}
+
+/* Divider */
+.custom-divider {
+    border: 0;
+    height: 1px;
+    background-color: #ccc; /* Adjust the color as needed */
+    margin: 10px 0;
+    width: 100%; /* Ensures it takes the full width of the container */
+}
+
+/* Categories and Genres */
+.categories, .genres {
+    margin-bottom: 30px;
+}
+
+.categories h3, .genres h3 {
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+
+.categories ul li a, .genres ul li a {
+    color: #ddd;
+    text-decoration: none;
+    font-size: 16px;
+    padding: 8px 0;
+    display: block;
+}
+
+.categories ul li a:hover, .genres ul li a:hover {
+    color: #fff;
+    text-decoration: underline;
+}
+
+#auth-buttons {
+    width: 97%;
+    display: flex;
+    justify-content:right; /* Align buttons to the right */
+    padding: 10px 20px;
+    position: absolute;
+    top: 15px; 
+    position: fixed; /* Change to fixed */
+    z-index: 1500;
+}
+
+#signup-button, #login-button {
+    padding: 10px 20px;
+    background-color: #b22222;
+    background:linear-gradient(to bottom,#8A0303,#8A0303,#700404,#3C0606,#220707,#080808);
+    color: #ffffff;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    text-transform: uppercase; /* Uppercase text */
+    border-radius: 5px; /* Rounded corners */
+    font-size: 16px; /* Consistent font size */
+    transition: background-color 0.3s ease, transform 0.2s ease; /* Smooth transitions */
+    z-index: 1500;
+}
+
+#signup-button {
+    margin-left: 10px; /* Space between buttons */
+}
+
+#login-button {
+    margin-left: 10px; /* Space between buttons */
+}
+
+#signup-button:hover, #login-button:hover {
+    background-color: #ff4444; /* Lighter color on hover */
+    transform: scale(1.05); /* Slight zoom effect on hover */
+}
+
+/* Main content */
+main {
+    flex: 1;
+    padding: 20px; 
+}
+
+#search {
+    margin-bottom: 20px;
+    color: rgb(255, 255, 255);
+    box-shadow: rgba(0, 0, 0, 0.2) 0px 2px 4px -1px, 
+                rgba(0, 0, 0, 0.14) 0px 4px 5px 0px, 
+                rgba(0, 0, 0, 0.12) 0px 1px 10px; 
+    display: block; /* Ensures the container is rendered properly */
+    width: calc(100% - 40px);
+    box-sizing: border-box;
+    position: fixed;
+    z-index: 1100; /* Keep the search bar visible and above other elements */
+    left: 20px;
+    margin-top: 20px;
+}
+
+#search-bar {
+    width: 50%; 
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #333;
+    font-size: 16px;
+    color: rgb(25, 23, 23);
+    background-color: rgb(255, 239, 239); 
+    box-shadow: rgba(0, 0, 0, 0.2) 0px 2px 4px -1px, 
+                rgba(0, 0, 0, 0.14) 0px 4px 5px 0px, 
+                rgba(0, 0, 0, 0.12) 0px 1px 10px;
+    margin: 0 auto; 
+    display: block; 
+    z-index: 1200; /* Make sure it's above other elements */
+    position: relative;
+    
+}
+/* Filters */
+#filters {
+    margin-bottom: 20px;
+}
+
+#filters label {
+    font-size: 16px;
+    margin-right: 10px;
+}
+
+#filters select {
+    padding: 8px;
+    border-radius: 5px;
+    border: 1px solid #333;
+    background-color: #444;
+    color: #fff;
+    font-size: 16px;
+}
+
+/* Movie list */
+#movie-list h2 {
+    font-size: 24px;
+    margin-bottom: 15px;
+}
+
+#movies {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+/* Chatbot button */
+#chatbot {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1500;
+}
+
+#chatbot-button {
+    background-color: #ff1e1e;
+    background:linear-gradient(to bottom,#8A0303,#8A0303,#700404,#3C0606,#220707,#080808);
+    border: none;
+    color: #fff;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Add shadow for a floating effect */
+    transition: background-color 0.3s ease, transform 0.2s ease; /* Smooth transitions */
+}
+
+#chatbot-button:hover {
+    background-color: #ff4949;
+    transform: scale(1.05); /* Slight zoom on hover */
+}
+
+.form-container {
+    padding: 70px; /* Reduced padding for smaller form */
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    width: 320px; /* Slightly smaller width */
+    text-align: center;
+    margin: 20px; /* Adjusted margin for better spacing */
+}
+
+.form-container h1 {
+    margin-bottom: 30px;
+    font-size: larger;
+    font-weight: bolder;
+    color: white;
+}
+
+.form-container input {
+    width: 90%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #444;
+    border-radius: 4px;
+    background:whitesmoke;
+    color: #fff;
+}
+
+.form-container button {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    background: #ff4444;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+.form-container button:hover {
+    background: #ff4444;
+}
+
+.form-container a {
+    color: #ffffff;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.form-container a:hover {
+    color: #cccccc;
+}
+
+.modal {
+    display:none;
+    position: fixed;
+    z-index: 1500;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.5); /* Semi-transparent background */
+}
+
+.modal-content {
+    background-color: #1f1f1f;
+    margin: 10% auto; /* Adjusted margin for positioning */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 60%; /* Slightly wider than .form-container */
+    max-width: 500px; /* Adjusted max-width for larger modal */
+    height: auto; /* Let content define the height */
+    position: relative;
+    border-radius: 8px; /* Added border-radius for consistency */
+}
+
+#chatbot-frame {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    float: right;
+}
+
+.close:hover,
+.close:focus {
+    color: #fff;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+#movie-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px; /* Reduced gap between cards */
+    justify-content: center;
+    margin-left: 220px; /* Adds space between the sidebar and the movie list */
+}
+
+.movie-card {
+    flex: 1 1 calc(20% - 15px); /* Adjusted to fit more cards per row */
+    box-sizing: border-box;
+    border: 1px solid #444;
+    border-radius: 8px;
+    overflow: hidden;
+    text-align: center;
+    background-color: #282828;
+    max-width: 250px; /* Set a max width to ensure cards don't get too large */
+    margin-top: 100px;
+}
+
+.movie-card img {
+    width: 100%;
+    /*height: 150px; /* Fixed height for images to fit the card */
+    object-fit: initial; /* Ensures the image covers the area of the card without distortion */
+    display: block;
+}
+
+.movie-details {
+    padding: 10px;
+}
+
+.movie-details h2 {
+    color: #fff;
+    font-size: 0.5em; /* Adjusted font size */
+    margin: 10px 0;
+}
+
+.movie-details p {
+    color: #fff;
+    margin: 0;
+    font-size: 0.9em; /* Adjusted font size */
+}
+
+.rating {
+    color: gold;
+}
+
+.modal-content img {
+    width: 100%; /* Makes the image responsive */
+    height: auto; /* Maintains aspect ratio */
+    max-height: 1000px; /* Sets a maximum height */
+    object-fit: cover; /* Ensures the image covers the area without distortion */
+    border-radius: 8px; /* Optional: adds rounded corners */
+}
+
+.modal-content {
+    padding: 20px; /* Adjusts padding for better spacing */
+}
+
+#modal-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centers the content */
+}

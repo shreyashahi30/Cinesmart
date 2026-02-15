@@ -1,0 +1,36 @@
+const apiKey = "YOUR_API_KEY";
+const upcomingMoviesUrl =
+  `https://api.themoviedb.org/3/movie/upcoming?api_key=${apiKey}&language=en-US&page=1`;
+
+function fetchUpcomingMovies() {
+  fetch(upcomingMoviesUrl)
+    .then(response => response.json())
+    .then(data => {
+      const moviesContainer = document.getElementById("movies");
+      moviesContainer.innerHTML = "";
+
+      if (!data.results || data.results.length === 0) {
+        moviesContainer.innerHTML = "<p>No upcoming movies found.</p>";
+        return;
+      }
+
+      data.results.forEach(movie => {
+        const poster = movie.poster_path
+          ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
+          : "/static/default.jpg";
+
+        moviesContainer.innerHTML += `
+          <div class="movie-card">
+            <img src="${poster}" width="150">
+            <h3>${movie.title}</h3>
+            <p>Release: ${movie.release_date}</p>
+          </div>
+        `;
+      });
+    })
+    .catch(error => {
+      console.log("Upcoming fetch error:", error);
+    });
+}
+
+document.addEventListener("DOMContentLoaded", fetchUpcomingMovies);

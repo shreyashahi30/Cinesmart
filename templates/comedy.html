@@ -19,36 +19,36 @@
                     <div id="sidebar-content">
                         <div class="logo">
                             <h2>CINESMART</h2>
-                        </div>
-                        <hr class="MuiDivider-root MuiDivider-fullWidth css-1px5dlw">
-                        <div class="categories">
-                            <h3>Categories</h3>
-                            <ul>
-                                <li><a href="{{ url_for('popular') }}"><img src="../static/popular.jpg" alt="Popular Icon"> Popular</a></li>
-                                <li><a href="{{ url_for('top_rated') }}"><img src="../static/top rated.jpg" alt="Top Rated Icon"> Top Rated</a></li>
-                                <li><a href="{{ url_for('upcoming') }}"><img src="../static/upcoming.jpg" alt="Upcoming Icon"> Upcoming</a></li>
-                            </ul>
-                        </div>
-                        <div class="genres">
-                            <h3>Genres</h3>
-                            <ul>
-                                <li><a href="{{ url_for('action') }}"><img src="../static/action.jpg" alt="Action Icon"> Action</a></li>
-                                <li><a href="{{ url_for('adventure') }}"><img src="../static/adventure.jpg" alt="Adventure Icon"> Adventure</a></li>
-                                <li><a href="{{ url_for('animation') }}"><img src="../static/animation.jpg" alt="Animation Icon"> Animation</a></li>
-                                <li><a href="{{ url_for('comedy') }}"><img src="../static/comedy.jpg" alt="Comedy Icon"> Comedy</a></li>
-                                <li><a href="{{ url_for('drama') }}"><img src="../static/drama.jpg" alt="Drama Icon"> Drama</a></li>
-                                <li><a href="{{ url_for('fantasy') }}"><img src="../static/fantasy.jpg" alt="Fantasy Icon"> Fantasy</a></li>
-                                <li><a href="{{ url_for('horror') }}"><img src="../static/horror.jpg" alt="Horror Icon"> Horror</a></li>
-                                <li><a href="{{ url_for('mystery') }}"><img src="../static/mystery.jpg" alt="Mystery Icon"> Mystery</a></li>
-                                <li><a href="{{ url_for('romance') }}"><img src="../static/romance.jpg" alt="Romance Icon"> Romance</a></li>
-                                <li><a href="{{ url_for('scifi') }}"><img src="../static/sci-fi.jpg" alt="Sci-Fi Icon"> Sci-Fi</a></li>
-                            </ul>
-                        </div>
                     </div>
-                </aside>
-            </div>
+                    <hr class="MuiDivider-root MuiDivider-fullWidth css-1px5dlw">
+                    <div class="categories">
+                        <h3>Categories</h3>
+                        <ul>
+                            <li><a href="{{ url_for('popular') }}"><img src="../static/popular.jpg" alt="Popular Icon"> Popular</a></li>
+                            <li><a href="{{ url_for('top_rated') }}"><img src="../static/top rated.jpg" alt="Top Rated Icon"> Top Rated</a></li>
+                            <li><a href="{{ url_for('upcoming') }}"><img src="../static/upcoming.jpg" alt="Upcoming Icon"> Upcoming</a></li>
+                        </ul>
+                    </div>
+                    <div class="genres">
+                        <h3>Genres</h3>
+                        <ul>
+                            <li><a href="{{ url_for('action') }}"><img src="../static/action.jpg" alt="Action Icon"> Action</a></li>
+                            <li><a href="{{ url_for('adventure') }}"><img src="../static/adventure.jpg" alt="Adventure Icon"> Adventure</a></li>
+                            <li><a href="{{ url_for('animation') }}"><img src="../static/animation.jpg" alt="Animation Icon"> Animation</a></li>
+                            <li><a href="{{ url_for('comedy') }}"><img src="../static/comedy.jpg" alt="Comedy Icon"> Comedy</a></li>
+                            <li><a href="{{ url_for('drama') }}"><img src="../static/drama.jpg" alt="Drama Icon"> Drama</a></li>
+                            <li><a href="{{ url_for('fantasy') }}"><img src="../static/fantasy.jpg" alt="Fantasy Icon"> Fantasy</a></li>
+                            <li><a href="{{ url_for('horror') }}"><img src="../static/horror.jpg" alt="Horror Icon"> Horror</a></li>
+                            <li><a href="{{ url_for('mystery') }}"><img src="../static/mystery.jpg" alt="Mystery Icon"> Mystery</a></li>
+                            <li><a href="{{ url_for('romance') }}"><img src="../static/romance.jpg" alt="Romance Icon"> Romance</a></li>
+                            <li><a href="{{ url_for('scifi') }}"><img src="../static/sci-fi.jpg" alt="Sci-Fi Icon"> Sci-Fi</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </aside>
         </div>
-    </header>
+    </div>
+</header>
     <div id="auth-buttons">      
         <button id="signup-button">Signup</button>
         <button id="login-button">Login</button>
@@ -115,7 +115,7 @@
     </div>
   </div>
 <script src="{{ url_for('static', filename='js/script_search.js') }}"></script>
-<script src="{{ url_for('static', filename='js/script_top.js') }}"></script>
+<script src="{{ url_for('static', filename='js/script_comedy.js') }}"></script>
   <script>
     // Modal handling for signup and login
     const signupModal = document.getElementById('signup-modal');

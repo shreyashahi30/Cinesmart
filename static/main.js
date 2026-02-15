@@ -1,21 +1,33 @@
-function openMovie(id) {
-  fetch(`/api/movie/${id}`)
+document.addEventListener("DOMContentLoaded", function () {
+
+  const container = document.getElementById("movies");
+  if (!container) return;
+
+  fetch("/api/popular")
     .then(res => res.json())
-    .then(movie => {
+    .then(data => {
 
-      console.log(movie.poster_path); // ✅ Debug line
+      container.innerHTML = "";
 
-      const poster = movie.poster_path
-        ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
-        : "/static/default.jpg";
+      data.results.forEach(movie => {
 
-      document.getElementById("modal-body").innerHTML = `
-        <img src="${poster}" 
-             style="width:200px; border-radius:10px;">
-        <h2>${movie.title}</h2>
-        <p>${movie.overview}</p>
-      `;
+        const card = document.createElement("div");
+        card.className = "movie-card";
 
-      document.getElementById("movie-detail-modal").style.display = "block";
+        const poster = movie.poster_path
+          ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
+          : "/static/default.jpg";
+
+        card.innerHTML = `
+          <img src="${poster}">
+          <h3>${movie.title}</h3>
+          <p>⭐ ${movie.vote_average}</p>
+        `;
+
+        card.addEventListener("click", () => openMovie(movie.id));
+
+        container.appendChild(card);
+      });
     });
-}
+
+});

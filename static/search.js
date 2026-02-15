@@ -1,61 +1,43 @@
-const input = document.getElementById("searchInput");
+document.addEventListener("DOMContentLoaded", function () {
 
-let timer = null;
+  const searchInput = document.getElementById("searchInput");
+  const container = document.getElementById("movies");
 
-if (input) {
-  input.addEventListener("keyup", function () {
-    clearTimeout(timer);
+  if (!searchInput || !container) return;
 
-    timer = setTimeout(() => {
-      const query = input.value.trim();
+  searchInput.addEventListener("keyup", function () {
 
-      if (query.length < 3) return;
+    const query = searchInput.value.trim();
 
-      fetch(`/search?query=${query}`)
-        .then(res => res.json())
-        .then(movies => {
-          const container = document.getElementById("movies");
-          container.innerHTML = "";
+    if (query.length < 2) return;
 
-          movies.forEach(movie => {
-            const card = document.createElement("div");
-            card.className = "movie-card";
+    fetch(`/search?query=${query}`)
+      .then(res => res.json())
+      .then(data => {
 
-            const poster = movie.poster_path
-              ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
-              : "/static/default.jpg";
+        container.innerHTML = "";
 
-            card.innerHTML = `
-              <img src="${poster}">
-              <h3>${movie.title}</h3>
-              <p>⭐ ${movie.vote_average}</p>
-            `;
+        data.forEach(movie => {
 
-movies.forEach(movie => {
-  const card = document.createElement("div");
-  card.className = "movie-card";
+          const card = document.createElement("div");
+          card.className = "movie-card";
 
-  const poster = movie.poster_path
-    ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
-    : "/static/default.jpg";
+          const poster = movie.poster_path
+            ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
+            : "/static/default.jpg";
 
-  card.innerHTML = `
-    <img src="${poster}">
-    <h3>${movie.title}</h3>
-    <p>⭐ ${movie.vote_average}</p>
-  `;
+          card.innerHTML = `
+            <img src="${poster}">
+            <h3>${movie.title}</h3>
+            <p>⭐ ${movie.vote_average}</p>
+          `;
 
-  // ✅ Modal opens on click
-  card.onclick = () => openMovie(movie.id);
+          card.addEventListener("click", () => openMovie(movie.id));
 
-  container.appendChild(card);
-});
-
-
-            container.appendChild(card);
-          });
+          container.appendChild(card);
         });
+      });
 
-    }, 700);
   });
-}
+
+});
