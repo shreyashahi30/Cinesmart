@@ -1,211 +1,142 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>CineSmart</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CineSmart</title>
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 
 <body>
 
 <!-- Sidebar -->
 <aside id="sidebar">
-    <div class="logo">
-        <h2>CINESMART</h2>
-    </div>
+  <div class="logo">
+    <h2>CINESMART</h2>
+  </div>
 
-    <!-- Categories -->
-    <div class="categories">
-        <h3>Categories</h3>
-        <ul>
-            <li>
-                <a href="/popular">
-                    <img src="{{ url_for('static', filename='popular.jpg') }}">
-                    Popular
-                </a>
-            </li>
+  <!-- Categories -->
+  <div class="categories">
+    <h3>Categories</h3>
+    <ul>
+      <li><a href="/popular">Popular</a></li>
+      <li><a href="/top_rated">Top Rated</a></li>
+      <li><a href="/upcoming">Upcoming</a></li>
+    </ul>
+  </div>
 
-            <li>
-                <a href="/top_rated">
-                    <img src="{{ url_for('static', filename='top rated.jpg') }}">
-                    Top Rated
-                </a>
-            </li>
-
-            <li>
-                <a href="/upcoming">
-                    <img src="{{ url_for('static', filename='upcoming.jpg') }}">
-                    Upcoming
-                </a>
-            </li>
-        </ul>
-    </div>
-
-    <!-- Genres -->
-    <div class="genres">
-        <h3>Genres</h3>
-        <ul>
-            <li><a href="/genre/28"><img src="{{ url_for('static', filename='action.jpg') }}"> Action</a></li>
-            <li><a href="/genre/12"><img src="{{ url_for('static', filename='adventure.jpg') }}"> Adventure</a></li>
-            <li><a href="/genre/16"><img src="{{ url_for('static', filename='animation.jpg') }}"> Animation</a></li>
-            <li><a href="/genre/35"><img src="{{ url_for('static', filename='comedy.jpg') }}"> Comedy</a></li>
-            <li><a href="/genre/18"><img src="{{ url_for('static', filename='drama.jpg') }}"> Drama</a></li>
-            <li><a href="/genre/14"><img src="{{ url_for('static', filename='fantasy.jpg') }}"> Fantasy</a></li>
-            <li><a href="/genre/27"><img src="{{ url_for('static', filename='horror.jpg') }}"> Horror</a></li>
-            <li><a href="/genre/9648"><img src="{{ url_for('static', filename='mystery.jpg') }}"> Mystery</a></li>
-            <li><a href="/genre/10749"><img src="{{ url_for('static', filename='romance.jpg') }}"> Romance</a></li>
-            <li><a href="/genre/878"><img src="{{ url_for('static', filename='sci-fi.jpg') }}"> Sci-Fi</a></li>
-        </ul>
-    </div>
+  <!-- Genres -->
+  <div class="genres">
+    <h3>Genres</h3>
+    <ul>
+      <li><a href="/genre/28">Action</a></li>
+      <li><a href="/genre/12">Adventure</a></li>
+      <li><a href="/genre/16">Animation</a></li>
+      <li><a href="/genre/35">Comedy</a></li>
+      <li><a href="/genre/18">Drama</a></li>
+      <li><a href="/genre/14">Fantasy</a></li>
+      <li><a href="/genre/27">Horror</a></li>
+      <li><a href="/genre/9648">Mystery</a></li>
+      <li><a href="/genre/10749">Romance</a></li>
+      <li><a href="/genre/878">Sci-Fi</a></li>
+    </ul>
+  </div>
 </aside>
 
-
-<!-- Search Bar -->
+<!-- Search -->
 <div id="search">
-    <input type="text" id="searchInput" placeholder="Search movies...">
+  <input type="text" id="searchInput" placeholder="Search movies...">
 </div>
-
 
 <!-- Main Content -->
-<main style="margin-left:250px; margin-top:120px; padding:30px; width:100%;">
-    {% block content %}{% endblock %}
+<main>
+  {% block content %}{% endblock %}
 </main>
 
-
-<!-- Movie Detail Modal -->
+<!-- Movie Modal -->
 <div id="movie-detail-modal" class="modal">
-    <div class="modal-content">
-        <span id="close-modal">&times;</span>
-        <div id="modal-body"></div>
-    </div>
-</div>
-
-
-<!-- Auth Buttons -->
-<div id="auth-buttons">
-    {% if session.get("user") %}
-        <p style="color:white;">
-            Welcome, {{ session["user"] }} 👋
-        </p>
-        <a href="/logout">Logout</a>
-    {% else %}
-        <button id="login-button">Login</button>
-        <button id="signup-button">Signup</button>
-    {% endif %}
-</div>
-
-
-<!-- CineBot Button -->
-<button id="chatbot-button">CineBot</button>
-
-
-<!-- Signup Modal -->
-<div id="signup-modal" class="modal">
   <div class="modal-content">
-    <span class="close" id="close-signup">&times;</span>
-
-    <h2>Signup</h2>
-    <form action="/signup" method="POST">
-      <input type="text" name="username" placeholder="Username" required><br><br>
-      <input type="email" name="email" placeholder="Email" required><br><br>
-      <input type="password" name="password" placeholder="Password" required><br><br>
-
-      <button type="submit">Signup</button>
-    </form>
+    <span id="close-modal">&times;</span>
+    <div id="modal-body"></div>
   </div>
 </div>
 
+<!-- Auth Buttons -->
+<div id="auth-buttons">
+  {% if session.get("user") %}
+    <p>Welcome, {{ session["user"] }} 👋</p>
+    <a href="/logout">Logout</a>
+  {% else %}
+    <button id="login-button">Login</button>
+    <button id="signup-button">Signup</button>
+  {% endif %}
+</div>
 
 <!-- Login Modal -->
 <div id="login-modal" class="modal">
   <div class="modal-content">
     <span class="close" id="close-login">&times;</span>
-
     <h2>Login</h2>
     <form action="/login" method="POST">
       <input type="email" name="email" placeholder="Email" required><br><br>
       <input type="password" name="password" placeholder="Password" required><br><br>
-
       <button type="submit">Login</button>
     </form>
   </div>
 </div>
 
-
-<!-- Dialogflow Chatbot Modal -->
-<div id="chatbot-modal" class="modal">
-  <div class="modal-content" style="width:400px; height:550px;">
-
-    <span id="close-chatbot" style="cursor:pointer; font-size:25px;">
-      &times;
-    </span>
-
-    <iframe
-      height="480"
-      width="370"
-      style="border:none;"
-      src="https://bot.dialogflow.com/6e8067d1-9c19-42eb-8f77-80babcc63bde">
-    </iframe>
-
+<!-- Signup Modal -->
+<div id="signup-modal" class="modal">
+  <div class="modal-content">
+    <span class="close" id="close-signup">&times;</span>
+    <h2>Signup</h2>
+    <form action="/signup" method="POST">
+      <input type="text" name="username" placeholder="Username" required><br><br>
+      <input type="email" name="email" placeholder="Email" required><br><br>
+      <input type="password" name="password" placeholder="Password" required><br><br>
+      <button type="submit">Signup</button>
+    </form>
   </div>
 </div>
 
+<!-- ✅ Dialogflow Messenger (WORKING BOT) -->
+<script src="https://www.gstatic.com/dialogflow-console/fast/messenger/bootstrap.js?v=1"></script>
 
-<!-- Global Scripts -->
+<df-messenger
+  intent="WELCOME"
+  chat-title="CineBot"
+  agent-id="6e8067d1-9c19-42eb-8f77-80babcc63bde"
+  language-code="en">
+</df-messenger>
+
+<!-- Scripts -->
 <script src="{{ url_for('static', filename='search.js') }}"></script>
 
-<!-- Page Specific Scripts -->
 {% block scripts %}{% endblock %}
 
-
-<!-- Modal + Chatbot Controller Script -->
+<!-- Modal Script -->
 <script>
 document.addEventListener("DOMContentLoaded", function () {
 
-  // Buttons
   const loginBtn = document.getElementById("login-button");
   const signupBtn = document.getElementById("signup-button");
-  const chatbotBtn = document.getElementById("chatbot-button");
 
-  // Modals
   const loginModal = document.getElementById("login-modal");
   const signupModal = document.getElementById("signup-modal");
-  const chatbotModal = document.getElementById("chatbot-modal");
-  const movieModal = document.getElementById("movie-detail-modal");
 
-  // Close Buttons
   const closeLogin = document.getElementById("close-login");
   const closeSignup = document.getElementById("close-signup");
-  const closeChatbot = document.getElementById("close-chatbot");
-  const closeMovie = document.getElementById("close-modal");
 
-
-  // ✅ Open Modals
   if (loginBtn) loginBtn.onclick = () => loginModal.style.display = "block";
   if (signupBtn) signupBtn.onclick = () => signupModal.style.display = "block";
-  if (chatbotBtn) chatbotBtn.onclick = () => chatbotModal.style.display = "block";
 
-
-  // ✅ Close Modals
   if (closeLogin) closeLogin.onclick = () => loginModal.style.display = "none";
   if (closeSignup) closeSignup.onclick = () => signupModal.style.display = "none";
-  if (closeChatbot) closeChatbot.onclick = () => chatbotModal.style.display = "none";
-  if (closeMovie) closeMovie.onclick = () => movieModal.style.display = "none";
 
-
-  // ✅ Close when clicking outside modal
-  window.onclick = function (e) {
-
-    if (e.target === loginModal)
-      loginModal.style.display = "none";
-
-    if (e.target === signupModal)
-      signupModal.style.display = "none";
-
-    if (e.target === chatbotModal)
-      chatbotModal.style.display = "none";
-
-    if (e.target === movieModal)
-      movieModal.style.display = "none";
+  window.onclick = function(e) {
+    if (e.target === loginModal) loginModal.style.display = "none";
+    if (e.target === signupModal) signupModal.style.display = "none";
   };
 
 });
