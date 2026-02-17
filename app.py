@@ -290,17 +290,89 @@ def logout():
 def chatbot():
     req = request.get_json()
 
-    user_text = req["queryResult"]["queryText"]
+    intent = req["queryResult"]["intent"]["displayName"]
+    params = req["queryResult"]["parameters"]
 
-    recommendations = get_recommendations(user_text)
+    # -----------------------------
+    # GENRE → TMDB Recommendations
+    # -----------------------------
+    if intent == "Recommend_By_Genre":
 
-    if not recommendations:
-        reply = "Sorry, I couldn't find similar movies."
-    else:
-        reply = "Movies like that: " + ", ".join(recommendations)
+        genre = params.get("genre")
 
+        genre_map = {
+            "action": 28,
+            "adventure": 12,
+            "animation": 16,
+            "comedy": 35,
+            "drama": 18,
+            "fantasy": 14,
+            "horror": 27,
+            "mystery": 9648,
+            "romance": 10749,
+            "sci-fi": 878
+        }
+
+        genre_id = genre_map.get(genre)
+
+        if not genre_id:
+            return jsonify({
+                "fulfillmentText": "Sorry, I couldn’t recognize that genre."
+            })
+
+        url = "https://api.themoviedb.org/3/discover/movie"
+        res = requests.get(url, params={
+            "api_key": TMDB_API_KEY,
+            "with_genres": genre_id,
+            "sort_by": "popularity.desc"
+        })
+
+        movies = res.json().get("results", [])[:5]
+
+        if not movies:
+            return jsonify({
+                "fulfillmentText": f"Sorry, I couldn’t find any {genre} movies right now."
+            })
+
+        reply = f"🎬 Here are some popular {genre} movies:\n\n"
+
+        for m in movies:
+            reply += f"⭐ {m['title']} (Rating: {m['vote_average']})\n"
+
+        return jsonify({"fulfillmentText": reply})
+
+    # -----------------------------
+    # SIMILAR MOVIE → CSV Dataset
+    # -----------------------------
+    if intent == "Recommend_Similar_Movie":
+
+        movie_name = params.get("movie")
+
+        # fallback if user typed full sentence
+        if not movie_name:
+            movie_name = req["queryResult"]["queryText"]
+
+        movie_name = movie_name.lower().strip()
+
+        recommendations = get_recommendations(movie_name)
+
+        if not recommendations:
+            return jsonify({
+                "fulfillmentText": f"Sorry, I couldn’t find '{movie_name}' in my dataset. Try another movie title."
+            })
+
+        reply = f"🎥 Movies similar to {movie_name.title()}:\n\n"
+
+        for r in recommendations:
+            reply += f"👉 {r.title()}\n"
+
+        return jsonify({"fulfillmentText": reply})
+
+    # -----------------------------
+    # DEFAULT
+    # -----------------------------
     return jsonify({
-        "fulfillmentText": reply
+        "fulfillmentText": "Ask me something like:\n- movies like Avatar\n- suggest horror movies"
     })
 
 
