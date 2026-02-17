@@ -24,9 +24,6 @@ document.addEventListener("DOMContentLoaded", function () {
           <p>⭐ ${movie.vote_average}</p>
         `;
 
-        // ✅ Use global openMovie from base.html
-        card.addEventListener("click", () => openMovie(movie.id));
-
         container.appendChild(card);
       });
     });

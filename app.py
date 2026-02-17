@@ -128,7 +128,7 @@ def init_db():
 # -----------------------------
 @app.route("/")
 def home():
-    return render_template("home.html")
+    return render_template("mi.html")
 
 
 @app.route("/popular")
@@ -147,7 +147,34 @@ def upcoming():
 
 
 # -----------------------------
-# Genre Pages (Separate Templates)
+# TMDB API Routes (ADDED)
+# -----------------------------
+@app.route("/api/popular")
+def api_popular():
+    url = f"https://api.themoviedb.org/3/movie/popular?api_key={TMDB_API_KEY}"
+    return jsonify(requests.get(url).json())
+
+
+@app.route("/api/top")
+def api_top():
+    url = f"https://api.themoviedb.org/3/movie/top_rated?api_key={TMDB_API_KEY}"
+    return jsonify(requests.get(url).json())
+
+
+@app.route("/api/upcoming")
+def api_upcoming():
+    url = f"https://api.themoviedb.org/3/movie/upcoming?api_key={TMDB_API_KEY}"
+    return jsonify(requests.get(url).json())
+
+
+@app.route("/api/genre/<int:genre_id>")
+def api_genre(genre_id):
+    url = f"https://api.themoviedb.org/3/discover/movie?api_key={TMDB_API_KEY}&with_genres={genre_id}"
+    return jsonify(requests.get(url).json())
+
+
+# -----------------------------
+# Genre Pages
 # -----------------------------
 @app.route("/action")
 def action():
@@ -255,6 +282,26 @@ def login():
 def logout():
     session.pop("user", None)
     return redirect("/")
+
+# -----------------------------
+# Dialogflow Webhook Route
+# -----------------------------
+@app.route("/chatbot", methods=["POST"])
+def chatbot():
+    req = request.get_json()
+
+    user_text = req["queryResult"]["queryText"]
+
+    recommendations = get_recommendations(user_text)
+
+    if not recommendations:
+        reply = "Sorry, I couldn't find similar movies."
+    else:
+        reply = "Movies like that: " + ", ".join(recommendations)
+
+    return jsonify({
+        "fulfillmentText": reply
+    })
 
 
 # -----------------------------
