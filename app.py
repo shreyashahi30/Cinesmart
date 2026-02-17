@@ -306,6 +306,10 @@ def chatbot():
 
         genre = params.get("genre")
 
+        # Handle list input from Dialogflow
+        if isinstance(genre, list):
+            genre = genre[0]
+
         genre_map = {
             "action": 28,
             "adventure": 12,
@@ -354,11 +358,15 @@ def chatbot():
 
         movie_name = params.get("movie")
 
-        # fallback if user typed full sentence
+        # Handle list input from Dialogflow
+        if isinstance(movie_name, list):
+            movie_name = movie_name[0]
+
+        # Fallback if empty
         if not movie_name:
             movie_name = req["queryResult"]["queryText"]
 
-        movie_name = movie_name.lower().strip()
+        movie_name = str(movie_name).lower().strip()
 
         recommendations = get_recommendations(movie_name)
 
@@ -375,12 +383,11 @@ def chatbot():
         return jsonify({"fulfillmentText": reply})
 
     # -----------------------------
-    # DEFAULT
+    # DEFAULT FALLBACK
     # -----------------------------
     return jsonify({
         "fulfillmentText": "Ask me something like:\n- movies like Avatar\n- suggest horror movies"
     })
-
 
 # -----------------------------
 # Run App
