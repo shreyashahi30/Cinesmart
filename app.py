@@ -48,21 +48,27 @@ cosine_sim = cosine_similarity(X)
 
 
 # -----------------------------
-# Recommendation Function
+# Recommendation Function (Improved)
 # -----------------------------
 def get_recommendations(title):
-    title = title.lower()
+    title = title.lower().strip()
 
-    if title not in data["movie_title"].values:
+    # Partial match instead of exact match
+    matches = data[data["movie_title"].str.contains(title, na=False)]
+
+    if matches.empty:
         return []
 
-    idx = data.index[data["movie_title"] == title][0]
-    scores = list(enumerate(cosine_sim[idx]))
+    # Take the first matching movie
+    idx = matches.index[0]
 
+    scores = list(enumerate(cosine_sim[idx]))
     scores = sorted(scores, key=lambda x: x[1], reverse=True)
+
     top_movies = scores[1:6]
 
     return [data["movie_title"].iloc[i[0]] for i in top_movies]
+
 
 
 # -----------------------------
