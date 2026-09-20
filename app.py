@@ -179,6 +179,14 @@ def api_genre(genre_id):
     return jsonify(requests.get(url).json())
 
 
+@app.route("/api/movie/<int:movie_id>")
+def api_movie_details(movie_id):
+    """Used by the movie-detail modal on every page (popular/top/upcoming/genre)."""
+    url = f"https://api.themoviedb.org/3/movie/{movie_id}"
+    res = requests.get(url, params={"api_key": TMDB_API_KEY, "language": "en-US"})
+    return jsonify(res.json())
+
+
 # -----------------------------
 # Genre Pages
 # -----------------------------
@@ -290,45 +298,47 @@ def logout():
     return redirect("/")
 
 # -----------------------------
-# Dialogflow Webhook Route
+# Chatbot Route (self-contained, no external Dialogflow dependency)
 # -----------------------------
+GENRE_MAP = {
+    "action": 28,
+    "adventure": 12,
+    "animation": 16,
+    "comedy": 35,
+    "drama": 18,
+    "fantasy": 14,
+    "horror": 27,
+    "mystery": 9648,
+    "romance": 10749,
+    "sci-fi": 878,
+    "scifi": 878,
+    "science fiction": 878,
+}
+
+
 @app.route("/chatbot", methods=["POST"])
 def chatbot():
-    req = request.get_json()
+    body = request.get_json(silent=True) or {}
+    message = str(body.get("message", "")).strip()
 
-    intent = req["queryResult"]["intent"]["displayName"]
-    params = req["queryResult"]["parameters"]
+    if not message:
+        return jsonify({
+            "reply": "Ask me something like:\n- movies like Avatar\n- suggest horror movies"
+        })
+
+    lower_msg = message.lower()
 
     # -----------------------------
     # GENRE → TMDB Recommendations
     # -----------------------------
-    if intent == "Recommend_By_Genre":
+    matched_genre = None
+    for genre_name, genre_id in GENRE_MAP.items():
+        if genre_name in lower_msg:
+            matched_genre = (genre_name, genre_id)
+            break
 
-        genre = params.get("genre")
-
-        # Handle list input from Dialogflow
-        if isinstance(genre, list):
-            genre = genre[0]
-
-        genre_map = {
-            "action": 28,
-            "adventure": 12,
-            "animation": 16,
-            "comedy": 35,
-            "drama": 18,
-            "fantasy": 14,
-            "horror": 27,
-            "mystery": 9648,
-            "romance": 10749,
-            "sci-fi": 878
-        }
-
-        genre_id = genre_map.get(genre)
-
-        if not genre_id:
-            return jsonify({
-                "fulfillmentText": "Sorry, I couldn’t recognize that genre."
-            })
+    if matched_genre:
+        genre_name, genre_id = matched_genre
 
         url = "https://api.themoviedb.org/3/discover/movie"
         res = requests.get(url, params={
@@ -341,52 +351,45 @@ def chatbot():
 
         if not movies:
             return jsonify({
-                "fulfillmentText": f"Sorry, I couldn’t find any {genre} movies right now."
+                "reply": f"Sorry, I couldn’t find any {genre_name} movies right now."
             })
 
-        reply = f"🎬 Here are some popular {genre} movies:\n\n"
-
+        reply = f"🎬 Here are some popular {genre_name} movies:\n\n"
         for m in movies:
             reply += f"⭐ {m['title']} (Rating: {m['vote_average']})\n"
 
-        return jsonify({"fulfillmentText": reply})
+        return jsonify({"reply": reply})
 
     # -----------------------------
     # SIMILAR MOVIE → CSV Dataset
+    # e.g. "movies like Avatar", "similar to Titanic", "recommend Inception"
     # -----------------------------
-    if intent == "Recommend_Similar_Movie":
+    movie_name = None
+    for keyword in ("similar to", "movies like", "movie like", "like", "recommend"):
+        if keyword in lower_msg:
+            movie_name = lower_msg.split(keyword, 1)[1].strip()
+            break
 
-        movie_name = params.get("movie")
+    if not movie_name:
+        # No keyword matched — try treating the whole message as a movie title
+        movie_name = lower_msg
 
-        # Handle list input from Dialogflow
-        if isinstance(movie_name, list):
-            movie_name = movie_name[0]
+    movie_name = movie_name.strip(" ?.!")
 
-        # Fallback if empty
-        if not movie_name:
-            movie_name = req["queryResult"]["queryText"]
-
-        movie_name = str(movie_name).lower().strip()
-
+    if movie_name:
         recommendations = get_recommendations(movie_name)
 
-        if not recommendations:
-            return jsonify({
-                "fulfillmentText": f"Sorry, I couldn’t find '{movie_name}' in my dataset. Try another movie title."
-            })
-
-        reply = f"🎥 Movies similar to {movie_name.title()}:\n\n"
-
-        for r in recommendations:
-            reply += f"👉 {r.title()}\n"
-
-        return jsonify({"fulfillmentText": reply})
+        if recommendations:
+            reply = f"🎥 Movies similar to {movie_name.title()}:\n\n"
+            for r in recommendations:
+                reply += f"👉 {r.title()}\n"
+            return jsonify({"reply": reply})
 
     # -----------------------------
     # DEFAULT FALLBACK
     # -----------------------------
     return jsonify({
-        "fulfillmentText": "Ask me something like:\n- movies like Avatar\n- suggest horror movies"
+        "reply": "Sorry, I couldn't quite understand that. Try:\n- \"suggest horror movies\"\n- \"movies like Avatar\""
     })
 
 # -----------------------------
