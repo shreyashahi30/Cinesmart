@@ -86,7 +86,8 @@
         <span class="close" id="close-signup">&times;</span>
         <div class="form-container">
             <h1>Signup</h1>
-            <form action="/signup" method="post">
+            <p id="signup-error" style="color:#ff6b6b; display:none; margin-bottom:10px;"></p>
+            <form id="signup-form">
                 <input type="text" name="username" placeholder="Username" required>
                 <input type="email" name="email" placeholder="Email" required>
                 <input type="password" name="password" placeholder="Password" required>
@@ -106,7 +107,8 @@
         <span class="close" id="close-login">&times;</span>
         <div class="form-container">
             <h1>Login</h1>
-            <form action="/login" method="post">
+            <p id="login-error" style="color:#ff6b6b; display:none; margin-bottom:10px;"></p>
+            <form id="login-form">
                 <input type="email" name="email" placeholder="Email" required>
                 <input type="password" name="password" placeholder="Password" required>
                 <button type="submit">Login</button>
@@ -141,6 +143,44 @@
             if (event.target === signupModal) signupModal.style.display = 'none';
             if (event.target === loginModal) loginModal.style.display = 'none';
         });
+
+        // Submit signup/login via fetch instead of a plain HTML form POST.
+        // A plain form submit replaces the whole page with whatever Flask
+        // returns (e.g. a bare "Invalid credentials" text page on failure) —
+        // this keeps the user on the app and shows the error in the modal.
+        function handleAuthForm(formId, errorId, url) {
+            const form = document.getElementById(formId);
+            const errorEl = document.getElementById(errorId);
+            if (!form) return;
+
+            form.addEventListener('submit', function (event) {
+                event.preventDefault();
+                errorEl.style.display = 'none';
+
+                fetch(url, {
+                    method: 'POST',
+                    body: new FormData(form)
+                })
+                    .then(res => res.json().then(data => ({ ok: res.ok, data })))
+                    .then(({ ok, data }) => {
+                        if (ok && data.success) {
+                            // Session cookie is set; reload to reflect the
+                            // logged-in state (sidebar "Hello, <user>" etc).
+                            window.location.reload();
+                        } else {
+                            errorEl.textContent = data.error || 'Something went wrong. Please try again.';
+                            errorEl.style.display = 'block';
+                        }
+                    })
+                    .catch(() => {
+                        errorEl.textContent = 'Could not reach the server. Please try again.';
+                        errorEl.style.display = 'block';
+                    });
+            });
+        }
+
+        handleAuthForm('signup-form', 'signup-error', '/signup');
+        handleAuthForm('login-form', 'login-error', '/login');
     })();
 </script>
 
