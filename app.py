@@ -127,7 +127,8 @@ def init_db():
 
     conn.commit()
     conn.close()
-    
+
+
 init_db()
 
 # -----------------------------
@@ -135,22 +136,22 @@ init_db()
 # -----------------------------
 @app.route("/")
 def home():
-    return render_template("mi.html")
+    return render_template("mi.html", username=session.get("user"))
 
 
 @app.route("/popular")
 def popular():
-    return render_template("popular.html")
+    return render_template("popular.html", username=session.get("user"))
 
 
 @app.route("/top_rated")
 def top_rated():
-    return render_template("top_rated.html")
+    return render_template("top_rated.html", username=session.get("user"))
 
 
 @app.route("/upcoming")
 def upcoming():
-    return render_template("upcoming.html")
+    return render_template("upcoming.html", username=session.get("user"))
 
 
 # -----------------------------
@@ -193,52 +194,52 @@ def api_movie_details(movie_id):
 # -----------------------------
 @app.route("/action")
 def action():
-    return render_template("action.html")
+    return render_template("action.html", username=session.get("user"))
 
 
 @app.route("/adventure")
 def adventure():
-    return render_template("adventure.html")
+    return render_template("adventure.html", username=session.get("user"))
 
 
 @app.route("/animation")
 def animation():
-    return render_template("animation.html")
+    return render_template("animation.html", username=session.get("user"))
 
 
 @app.route("/comedy")
 def comedy():
-    return render_template("comedy.html")
+    return render_template("comedy.html", username=session.get("user"))
 
 
 @app.route("/drama")
 def drama():
-    return render_template("drama.html")
+    return render_template("drama.html", username=session.get("user"))
 
 
 @app.route("/fantasy")
 def fantasy():
-    return render_template("fantasy.html")
+    return render_template("fantasy.html", username=session.get("user"))
 
 
 @app.route("/horror")
 def horror():
-    return render_template("horror.html")
+    return render_template("horror.html", username=session.get("user"))
 
 
 @app.route("/mystery")
 def mystery():
-    return render_template("mystery.html")
+    return render_template("mystery.html", username=session.get("user"))
 
 
 @app.route("/romance")
 def romance():
-    return render_template("romance.html")
+    return render_template("romance.html", username=session.get("user"))
 
 
 @app.route("/scifi")
 def scifi():
-    return render_template("scifi.html")
+    return render_template("scifi.html", username=session.get("user"))
 
 
 # -----------------------------
