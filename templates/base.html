@@ -81,8 +81,13 @@
 </header>
 
 <div id="auth-buttons">
-    <button id="signup-button">Signup</button>
-    <button id="login-button">Login</button>
+    {% if username %}
+        <span id="welcome-user">Hello, {{ username }}</span>
+        <a href="{{ url_for('logout') }}"><button id="logout-button">Logout</button></a>
+    {% else %}
+        <button id="signup-button">Signup</button>
+        <button id="login-button">Login</button>
+    {% endif %}
 </div>
 
 <main>
