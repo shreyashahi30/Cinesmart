@@ -295,7 +295,7 @@ def signup():
     password = request.form.get("password", "")
 
     if not username or not email or not password:
-        return "Username, email and password are all required", 400
+        return jsonify({"success": False, "error": "Username, email and password are all required"}), 400
 
     hashed_pw = generate_password_hash(password)
 
@@ -310,14 +310,14 @@ def signup():
         conn.commit()
     except sqlite3.IntegrityError:
         conn.close()
-        return "Email already exists", 400
+        return jsonify({"success": False, "error": "Email already exists"}), 400
     except sqlite3.Error as e:
         conn.close()
-        return f"Signup failed: {e}", 500
+        return jsonify({"success": False, "error": f"Signup failed: {e}"}), 500
 
     conn.close()
     session["user"] = username
-    return redirect("/")
+    return jsonify({"success": True, "username": username})
 
 
 # -----------------------------
@@ -337,9 +337,9 @@ def login():
 
     if user and check_password_hash(user[3], password):
         session["user"] = user[1]
-        return redirect("/")
+        return jsonify({"success": True, "username": user[1]})
 
-    return "Invalid credentials", 401
+    return jsonify({"success": False, "error": "Invalid credentials"}), 401
 
 
 # -----------------------------
