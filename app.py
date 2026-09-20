@@ -20,12 +20,39 @@ TMDB_API_KEY = os.getenv("TMDB_API_KEY")
 if not TMDB_API_KEY:
     raise ValueError("TMDB_API_KEY not found in .env file")
 
+SECRET_KEY = os.getenv("SECRET_KEY")
+if not SECRET_KEY:
+    # Works without it, but sessions are forgeable until you set a real
+    # SECRET_KEY in your .env file. See the note at the end of this reply.
+    print("WARNING: SECRET_KEY not set in .env — using an insecure default.")
+    SECRET_KEY = "insecure-dev-key-change-me"
+
+TMDB_TIMEOUT = 8  # seconds
+
 
 # -----------------------------
 # Flask Setup
 # -----------------------------
 app = Flask(__name__)
-app.secret_key = "cinesmart_secret_key"
+app.secret_key = SECRET_KEY
+
+
+# -----------------------------
+# TMDB helper (centralized error handling)
+# -----------------------------
+def tmdb_get(url, params=None):
+    """Wraps every TMDB call so a timeout / rate limit / bad response
+    can't crash a route with an uncaught exception."""
+    try:
+        res = requests.get(url, params=params, timeout=TMDB_TIMEOUT)
+        res.raise_for_status()
+        return res.json()
+    except requests.exceptions.RequestException as e:
+        print(f"TMDB request failed: {e}")
+        return None
+    except ValueError as e:
+        print(f"TMDB returned invalid JSON: {e}")
+        return None
 
 
 # -----------------------------
@@ -34,12 +61,15 @@ app.secret_key = "cinesmart_secret_key"
 data = pd.read_csv("final_data.csv")
 data["movie_title"] = data["movie_title"].str.lower()
 
+# Genres are repeated so genre overlap carries real weight in the TF-IDF
+# vector. Previously a single genre word was drowned out by rare actor
+# surnames, so recommendations tracked shared cast more than shared genre.
 data["comb"] = (
     data["director_name"].fillna("") + " " +
     data["actor_1_name"].fillna("") + " " +
     data["actor_2_name"].fillna("") + " " +
     data["actor_3_name"].fillna("") + " " +
-    data["genres"].fillna("")
+    ((data["genres"].fillna("") + " ") * 3)
 )
 
 vectorizer = TfidfVectorizer(stop_words="english", max_features=5000)
@@ -48,18 +78,21 @@ cosine_sim = cosine_similarity(X)
 
 
 # -----------------------------
-# Recommendation Function (Improved)
+# Recommendation Function
 # -----------------------------
 def get_recommendations(title):
     title = title.lower().strip()
 
-    # Partial match instead of exact match
-    matches = data[data["movie_title"].str.contains(title, na=False)]
+    if not title:
+        return []
+
+    # regex=False: a title containing "(", ")", "+", etc. used to crash
+    # this with an uncaught re.error and 500 the whole route.
+    matches = data[data["movie_title"].str.contains(title, na=False, regex=False)]
 
     if matches.empty:
         return []
 
-    # Take the first matching movie
     idx = matches.index[0]
 
     scores = list(enumerate(cosine_sim[idx]))
@@ -70,7 +103,6 @@ def get_recommendations(title):
     return [data["movie_title"].iloc[i[0]] for i in top_movies]
 
 
-
 # -----------------------------
 # TMDB Movie Fetch
 # -----------------------------
@@ -78,9 +110,11 @@ def fetch_tmdb_movie(title):
     url = "https://api.themoviedb.org/3/search/movie"
     params = {"api_key": TMDB_API_KEY, "query": title}
 
-    res = requests.get(url, params=params)
-    results = res.json().get("results", [])
+    result = tmdb_get(url, params)
+    if not result:
+        return None
 
+    results = result.get("results", [])
     return results[0] if results else None
 
 
@@ -89,7 +123,7 @@ def fetch_tmdb_movie(title):
 # -----------------------------
 @app.route("/search")
 def search():
-    query = request.args.get("query")
+    query = request.args.get("query", "").strip()
 
     if not query:
         return jsonify([])
@@ -155,38 +189,47 @@ def upcoming():
 
 
 # -----------------------------
-# TMDB API Routes (ADDED)
+# TMDB API Routes
 # -----------------------------
 @app.route("/api/popular")
 def api_popular():
-    url = f"https://api.themoviedb.org/3/movie/popular?api_key={TMDB_API_KEY}"
-    return jsonify(requests.get(url).json())
+    url = "https://api.themoviedb.org/3/movie/popular"
+    result = tmdb_get(url, {"api_key": TMDB_API_KEY})
+    return jsonify(result or {"results": []})
 
 
 @app.route("/api/top")
 def api_top():
-    url = f"https://api.themoviedb.org/3/movie/top_rated?api_key={TMDB_API_KEY}"
-    return jsonify(requests.get(url).json())
+    url = "https://api.themoviedb.org/3/movie/top_rated"
+    result = tmdb_get(url, {"api_key": TMDB_API_KEY})
+    return jsonify(result or {"results": []})
 
 
 @app.route("/api/upcoming")
 def api_upcoming():
-    url = f"https://api.themoviedb.org/3/movie/upcoming?api_key={TMDB_API_KEY}"
-    return jsonify(requests.get(url).json())
+    url = "https://api.themoviedb.org/3/movie/upcoming"
+    result = tmdb_get(url, {"api_key": TMDB_API_KEY})
+    return jsonify(result or {"results": []})
 
 
 @app.route("/api/genre/<int:genre_id>")
 def api_genre(genre_id):
-    url = f"https://api.themoviedb.org/3/discover/movie?api_key={TMDB_API_KEY}&with_genres={genre_id}"
-    return jsonify(requests.get(url).json())
+    url = "https://api.themoviedb.org/3/discover/movie"
+    result = tmdb_get(url, {
+        "api_key": TMDB_API_KEY,
+        "with_genres": genre_id,
+    })
+    return jsonify(result or {"results": []})
 
 
 @app.route("/api/movie/<int:movie_id>")
 def api_movie_details(movie_id):
     """Used by the movie-detail modal on every page (popular/top/upcoming/genre)."""
     url = f"https://api.themoviedb.org/3/movie/{movie_id}"
-    res = requests.get(url, params={"api_key": TMDB_API_KEY, "language": "en-US"})
-    return jsonify(res.json())
+    result = tmdb_get(url, {"api_key": TMDB_API_KEY, "language": "en-US"})
+    if not result:
+        return jsonify({"error": "Could not fetch movie details"}), 502
+    return jsonify(result)
 
 
 # -----------------------------
@@ -247,9 +290,12 @@ def scifi():
 # -----------------------------
 @app.route("/signup", methods=["POST"])
 def signup():
-    username = request.form.get("username")
-    email = request.form.get("email")
-    password = request.form.get("password")
+    username = request.form.get("username", "").strip()
+    email = request.form.get("email", "").strip()
+    password = request.form.get("password", "")
+
+    if not username or not email or not password:
+        return "Username, email and password are all required", 400
 
     hashed_pw = generate_password_hash(password)
 
@@ -262,10 +308,15 @@ def signup():
             (username, email, hashed_pw)
         )
         conn.commit()
-    except:
-        return "Email already exists"
+    except sqlite3.IntegrityError:
+        conn.close()
+        return "Email already exists", 400
+    except sqlite3.Error as e:
+        conn.close()
+        return f"Signup failed: {e}", 500
 
     conn.close()
+    session["user"] = username
     return redirect("/")
 
 
@@ -274,8 +325,8 @@ def signup():
 # -----------------------------
 @app.route("/login", methods=["POST"])
 def login():
-    email = request.form.get("email")
-    password = request.form.get("password")
+    email = request.form.get("email", "").strip()
+    password = request.form.get("password", "")
 
     conn = sqlite3.connect("users.db")
     cursor = conn.cursor()
@@ -288,7 +339,7 @@ def login():
         session["user"] = user[1]
         return redirect("/")
 
-    return "Invalid credentials"
+    return "Invalid credentials", 401
 
 
 # -----------------------------
@@ -300,7 +351,7 @@ def logout():
     return redirect("/")
 
 # -----------------------------
-# Chatbot Route (self-contained, no external Dialogflow dependency)
+# Chatbot Route
 # -----------------------------
 GENRE_MAP = {
     "action": 28,
@@ -343,17 +394,17 @@ def chatbot():
         genre_name, genre_id = matched_genre
 
         url = "https://api.themoviedb.org/3/discover/movie"
-        res = requests.get(url, params={
+        result = tmdb_get(url, {
             "api_key": TMDB_API_KEY,
             "with_genres": genre_id,
             "sort_by": "popularity.desc"
         })
 
-        movies = res.json().get("results", [])[:5]
+        movies = (result or {}).get("results", [])[:5]
 
         if not movies:
             return jsonify({
-                "reply": f"Sorry, I couldn’t find any {genre_name} movies right now."
+                "reply": f"Sorry, I couldn't find any {genre_name} movies right now."
             })
 
         reply = f"🎬 Here are some popular {genre_name} movies:\n\n"
@@ -364,7 +415,6 @@ def chatbot():
 
     # -----------------------------
     # SIMILAR MOVIE → CSV Dataset
-    # e.g. "movies like Avatar", "similar to Titanic", "recommend Inception"
     # -----------------------------
     movie_name = None
     for keyword in ("similar to", "movies like", "movie like", "like", "recommend"):
@@ -373,7 +423,6 @@ def chatbot():
             break
 
     if not movie_name:
-        # No keyword matched — try treating the whole message as a movie title
         movie_name = lower_msg
 
     movie_name = movie_name.strip(" ?.!")
