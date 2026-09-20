@@ -22,11 +22,11 @@ body {
     width: 200px;
     background-color: black;
     padding: 10px;
-    min-height: 100vh; /* Make the sidebar at least the full height of the viewport */
-    box-sizing: border-box; /* Ensure padding is included in height calculation */
-    overflow-y: auto; 
-    top: 0; /* Align the sidebar to the top of the viewport */
-    left: 0; /* Align the sidebar to the left of the viewport */
+    min-height: 100vh;
+    box-sizing: border-box;
+    overflow-y: auto;
+    top: 0;
+    left: 0;
     position: fixed;
     z-index: 1500;
 }
@@ -47,36 +47,36 @@ body {
 
 /* Line below CINESMART */
 #sidebar-content .logo h2 {
-    border-bottom: 1px solid rgba(128, 128, 128, 0.5); /* Grey transparent border */
+    border-bottom: 1px solid rgba(128, 128, 128, 0.5);
     padding-bottom: 30px;
-    width: 100%; /* Ensure it spans the full width of the sidebar */
+    width: 100%;
 }
 
 /* Transparent partition between categories and genres */
 #sidebar-content .categories,
 #sidebar-content .genres {
-    border-bottom: 1px solid rgba(128, 128, 128, 0.5); /* Grey transparent border */
+    border-bottom: 1px solid rgba(128, 128, 128, 0.5);
     padding-bottom: 30px;
-    width: 100%; /* Ensure it spans the full width of the sidebar */
+    width: 100%;
 }
 
 /* Icon styling */
 #sidebar-content .categories ul li,
 #sidebar-content .genres ul li {
-    list-style: none; /* Remove default bullet points */
+    list-style: none;
 }
 
 #sidebar-content .categories ul li a,
 #sidebar-content .genres ul li a {
-    display: flex; /* Create a flex container */
-    align-items: center; /* Center items vertically */
+    display: flex;
+    align-items: center;
 }
 
 #sidebar-content .categories ul li a img,
 #sidebar-content .genres ul li a img {
-    width: 30px; /* Adjust the width as needed */
-    height: 30px; /* Adjust the height as needed */
-    margin-right: 10px; /* Add spacing between icon and text */
+    width: 30px;
+    height: 30px;
+    margin-right: 10px;
 }
 
 .logo h2 {
@@ -88,31 +88,30 @@ body {
     width: 100%;
     display: flex;
     flex-direction: column;
-    text-transform: uppercase; 
-    margin-bottom: 10px; 
-    letter-spacing: 2px; 
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    letter-spacing: 2px;
     text-align: center;
-    display: inline-block; 
-    transform: perspective(500px) rotateX(20deg); 
+    display: inline-block;
+    transform: perspective(500px) rotateX(20deg);
     font-family: 'Arial', sans-serif;
     margin-top: 20px;
 }
 
-
 /* Hover effect for the logo text */
 .logo h2:hover {
-    transform: perspective(500px) rotateX(20deg) scale(1.05); /* Slight zoom effect */
-    color: #ffffff; /* Change color on hover */
-    text-shadow: 2px 2px 10px rgba(255, 255, 255, 0.7); /* Lighter shadow on hover */
+    transform: perspective(500px) rotateX(20deg) scale(1.05);
+    color: #ffffff;
+    text-shadow: 2px 2px 10px rgba(255, 255, 255, 0.7);
 }
 
 /* Divider */
 .custom-divider {
     border: 0;
     height: 1px;
-    background-color: #ccc; /* Adjust the color as needed */
+    background-color: #ccc;
     margin: 10px 0;
-    width: 100%; /* Ensures it takes the full width of the container */
+    width: 100%;
 }
 
 /* Categories and Genres */
@@ -141,11 +140,10 @@ body {
 #auth-buttons {
     width: 97%;
     display: flex;
-    justify-content:right; /* Align buttons to the right */
+    justify-content:right;
     padding: 10px 20px;
-    position: absolute;
-    top: 15px; 
-    position: fixed; /* Change to fixed */
+    position: fixed;
+    top: 15px;
     z-index: 1500;
 }
 
@@ -157,64 +155,71 @@ body {
     border: none;
     cursor: pointer;
     font-weight: bold;
-    text-transform: uppercase; /* Uppercase text */
-    border-radius: 5px; /* Rounded corners */
-    font-size: 16px; /* Consistent font size */
-    transition: background-color 0.3s ease, transform 0.2s ease; /* Smooth transitions */
+    text-transform: uppercase;
+    border-radius: 5px;
+    font-size: 16px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
     z-index: 1500;
 }
 
 #signup-button {
-    margin-left: 10px; /* Space between buttons */
+    margin-left: 10px;
 }
 
 #login-button {
-    margin-left: 10px; /* Space between buttons */
+    margin-left: 10px;
 }
 
 #signup-button:hover, #login-button:hover {
-    background-color: #ff4444; /* Lighter color on hover */
-    transform: scale(1.05); /* Slight zoom effect on hover */
+    background-color: #ff4444;
+    transform: scale(1.05);
 }
 
 /* Main content */
+/* #sidebar is position:fixed (pulled out of the flex flow), so every page's
+   content needs its own left offset here or it renders underneath the
+   sidebar — this is set on `main` (not just #movie-list) so it applies to
+   every page, not only the home page. */
 main {
     flex: 1;
-    padding: 20px; 
+    padding: 20px;
+    margin-left: 220px;
+    box-sizing: border-box;
+    width: calc(100% - 220px);
 }
 
 #search {
     margin-bottom: 20px;
     color: rgb(255, 255, 255);
-    box-shadow: rgba(0, 0, 0, 0.2) 0px 2px 4px -1px, 
-                rgba(0, 0, 0, 0.14) 0px 4px 5px 0px, 
-                rgba(0, 0, 0, 0.12) 0px 1px 10px; 
-    display: block; /* Ensures the container is rendered properly */
-    width: calc(100% - 40px);
+    box-shadow: rgba(0, 0, 0, 0.2) 0px 2px 4px -1px,
+                rgba(0, 0, 0, 0.14) 0px 4px 5px 0px,
+                rgba(0, 0, 0, 0.12) 0px 1px 10px;
+    display: block;
+    width: calc(100% - 240px);
     box-sizing: border-box;
     position: fixed;
-    z-index: 1100; /* Keep the search bar visible and above other elements */
-    left: 20px;
+    z-index: 1100;
+    left: 220px;
     margin-top: 20px;
 }
 
 #search-bar {
-    width: 50%; 
+    width: 50%;
     padding: 10px;
     border-radius: 5px;
     border: 1px solid #333;
     font-size: 16px;
     color: rgb(25, 23, 23);
-    background-color: rgb(255, 239, 239); 
-    box-shadow: rgba(0, 0, 0, 0.2) 0px 2px 4px -1px, 
-                rgba(0, 0, 0, 0.14) 0px 4px 5px 0px, 
+    background-color: rgb(255, 239, 239);
+    box-shadow: rgba(0, 0, 0, 0.2) 0px 2px 4px -1px,
+                rgba(0, 0, 0, 0.14) 0px 4px 5px 0px,
                 rgba(0, 0, 0, 0.12) 0px 1px 10px;
-    margin: 0 auto; 
-    display: block; 
-    z-index: 1200; /* Make sure it's above other elements */
+    margin: 0 auto;
+    display: block;
+    z-index: 1200;
     position: relative;
-    
 }
+
 /* Filters */
 #filters {
     margin-bottom: 20px;
@@ -263,22 +268,22 @@ main {
     font-size: 16px;
     cursor: pointer;
     border-radius: 5px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Add shadow for a floating effect */
-    transition: background-color 0.3s ease, transform 0.2s ease; /* Smooth transitions */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 #chatbot-button:hover {
     background-color: #ff4949;
-    transform: scale(1.05); /* Slight zoom on hover */
+    transform: scale(1.05);
 }
 
 .form-container {
-    padding: 70px; /* Reduced padding for smaller form */
+    padding: 70px;
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-    width: 320px; /* Slightly smaller width */
+    width: 320px;
     text-align: center;
-    margin: 20px; /* Adjusted margin for better spacing */
+    margin: 20px;
 }
 
 .form-container h1 {
@@ -333,19 +338,19 @@ main {
     width: 100%;
     height: 100%;
     overflow: auto;
-    background-color: rgba(0,0,0,0.5); /* Semi-transparent background */
+    background-color: rgba(0,0,0,0.5);
 }
 
 .modal-content {
     background-color: #1f1f1f;
-    margin: 10% auto; /* Adjusted margin for positioning */
+    margin: 10% auto;
     padding: 20px;
     border: 1px solid #888;
-    width: 60%; /* Slightly wider than .form-container */
-    max-width: 500px; /* Adjusted max-width for larger modal */
-    height: auto; /* Let content define the height */
+    width: 60%;
+    max-width: 500px;
+    height: auto;
     position: relative;
-    border-radius: 8px; /* Added border-radius for consistency */
+    border-radius: 8px;
 }
 
 #chatbot-frame {
@@ -359,7 +364,6 @@ main {
     float: right;
     font-size: 28px;
     font-weight: bold;
-    float: right;
 }
 
 .close:hover,
@@ -372,27 +376,28 @@ main {
 #movie-list {
     display: flex;
     flex-wrap: wrap;
-    gap: 10px; /* Reduced gap between cards */
+    gap: 10px;
     justify-content: center;
-    margin-left: 220px; /* Adds space between the sidebar and the movie list */
+    /* No margin-left here: `main` now handles the sidebar offset for every
+       page, so this no longer needs (and must not duplicate) its own. */
+    margin-top: 100px;
 }
 
 .movie-card {
-    flex: 1 1 calc(20% - 15px); /* Adjusted to fit more cards per row */
+    flex: 1 1 calc(20% - 15px);
     box-sizing: border-box;
     border: 1px solid #444;
     border-radius: 8px;
     overflow: hidden;
     text-align: center;
     background-color: #282828;
-    max-width: 250px; /* Set a max width to ensure cards don't get too large */
+    max-width: 250px;
     margin-top: 100px;
 }
 
 .movie-card img {
     width: 100%;
-    /*height: 150px; /* Fixed height for images to fit the card */
-    object-fit: initial; /* Ensures the image covers the area of the card without distortion */
+    object-fit: initial;
     display: block;
 }
 
@@ -402,14 +407,14 @@ main {
 
 .movie-details h2 {
     color: #fff;
-    font-size: 0.5em; /* Adjusted font size */
+    font-size: 0.5em;
     margin: 10px 0;
 }
 
 .movie-details p {
     color: #fff;
     margin: 0;
-    font-size: 0.9em; /* Adjusted font size */
+    font-size: 0.9em;
 }
 
 .rating {
@@ -417,21 +422,17 @@ main {
 }
 
 .modal-content img {
-    width: 100%; /* Makes the image responsive */
-    height: auto; /* Maintains aspect ratio */
-    max-height: 1000px; /* Sets a maximum height */
-    object-fit: cover; /* Ensures the image covers the area without distortion */
-    border-radius: 8px; /* Optional: adds rounded corners */
-}
-
-.modal-content {
-    padding: 20px; /* Adjusts padding for better spacing */
+    width: 100%;
+    height: auto;
+    max-height: 1000px;
+    object-fit: cover;
+    border-radius: 8px;
 }
 
 #modal-body {
     display: flex;
     flex-direction: column;
-    align-items: center; /* Centers the content */
+    align-items: center;
 }
 
 /* ----------------------------- */
