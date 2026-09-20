@@ -17,27 +17,6 @@ body {
     padding: 0;
 }
 
-/* Header */
-.header {
-    background-color: black;
-    width: 100%;
-    padding: 20px;
-    text-align: center;
-    color: white;
-    position: absolute;
-    /*z-index: 2; /* Ensures header is above the overlay */
-}
-
-/* Header container */
-#header-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    background-color: #333;
-    height: 100%;
-}
-
 /* Sidebar */
 #sidebar {
     width: 200px;
@@ -51,13 +30,11 @@ body {
     position: fixed;
     z-index: 1500;
 }
-#sidebar-container {
-    ::-webkit-scrollbar {
-        width: 50px; /* Adjust the width as needed */
-    }
-    ::-webkit-scrollbar-thumb {
-        background-color: #888; /* Customize the thumb color */
-    }
+#sidebar::-webkit-scrollbar {
+    width: 10px;
+}
+#sidebar::-webkit-scrollbar-thumb {
+    background-color: #888;
 }
 #sidebar-content {
     display: flex;
