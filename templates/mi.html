@@ -90,8 +90,13 @@
 
 <!-- Auth Buttons -->
 <div id="auth-buttons">
-    <button id="signup-button">Signup</button>
-    <button id="login-button">Login</button>
+    {% if username %}
+        <span id="welcome-user">Hello, {{ username }}</span>
+        <a href="{{ url_for('logout') }}"><button id="logout-button">Logout</button></a>
+    {% else %}
+        <button id="signup-button">Signup</button>
+        <button id="login-button">Login</button>
+    {% endif %}
 </div>
 
 
@@ -194,31 +199,45 @@
     const goToSignup = document.getElementById('go-to-signup');
     const goToLogin = document.getElementById('go-to-login');
 
-    signupBtn.onclick = function () {
-        signupModal.style.display = 'block';
-    };
+    // Signup/Login buttons only exist in the DOM when nobody is logged in,
+    // so guard every listener.
+    if (signupBtn) {
+        signupBtn.onclick = function () {
+            signupModal.style.display = 'block';
+        };
+    }
 
-    loginBtn.onclick = function () {
-        loginModal.style.display = 'block';
-    };
+    if (loginBtn) {
+        loginBtn.onclick = function () {
+            loginModal.style.display = 'block';
+        };
+    }
 
-    closeSignup.onclick = function () {
-        signupModal.style.display = 'none';
-    };
+    if (closeSignup) {
+        closeSignup.onclick = function () {
+            signupModal.style.display = 'none';
+        };
+    }
 
-    closeLogin.onclick = function () {
-        loginModal.style.display = 'none';
-    };
+    if (closeLogin) {
+        closeLogin.onclick = function () {
+            loginModal.style.display = 'none';
+        };
+    }
 
-    goToSignup.onclick = function () {
-        loginModal.style.display = 'none';
-        signupModal.style.display = 'block';
-    };
+    if (goToSignup) {
+        goToSignup.onclick = function () {
+            loginModal.style.display = 'none';
+            signupModal.style.display = 'block';
+        };
+    }
 
-    goToLogin.onclick = function () {
-        signupModal.style.display = 'none';
-        loginModal.style.display = 'block';
-    };
+    if (goToLogin) {
+        goToLogin.onclick = function () {
+            signupModal.style.display = 'none';
+            loginModal.style.display = 'block';
+        };
+    }
 
     window.onclick = function (event) {
         if (event.target == signupModal) signupModal.style.display = 'none';
