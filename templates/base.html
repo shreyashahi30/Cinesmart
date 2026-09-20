@@ -144,6 +144,12 @@
     })();
 </script>
 
+<!-- Search bar: lives here (not in a single page's block) so it shows on
+     every page, not just the home page. -->
+<section id="search">
+    <input type="text" id="search-bar" placeholder="Search for movies...">
+</section>
+
 <main>
     {% block content %}{% endblock %}
 </main>
@@ -173,6 +179,7 @@
 
 <script src="{{ url_for('static', filename='js/movie-modal.js') }}"></script>
 <script src="{{ url_for('static', filename='js/chatbot.js') }}"></script>
+<script src="{{ url_for('static', filename='js/script_search.js') }}"></script>
 
 {% block scripts %}{% endblock %}
 
