@@ -1,19 +1,26 @@
-// Shared movie-detail modal used by every page (popular, genre, top rated, upcoming, search).
-// Requires the #movie-detail-modal / #modal-body / #close-modal markup that lives in base.html and mi.html,
-// and the /api/movie/<id> route in app.py.
-
 function openMovieModal(movieId) {
+  const modal = document.getElementById("movie-detail-modal");
+  const modalBody = document.getElementById("modal-body");
+
+  if (!modal || !modalBody) {
+    console.error("Movie modal markup not found on this page.");
+    return;
+  }
+
+  // Show the modal immediately with a loading state so a slow or failed
+  // TMDB request doesn't look like a dead click.
+  modalBody.innerHTML = "<p>Loading…</p>";
+  modal.style.display = "block";
+
   fetch(`/api/movie/${movieId}`)
-    .then(res => res.json())
-    .then(movie => {
-      const modal = document.getElementById("movie-detail-modal");
-      const modalBody = document.getElementById("modal-body");
-
-      if (!modal || !modalBody) {
-        console.error("Movie modal markup not found on this page.");
-        return;
+    .then(res => {
+      if (!res.ok) {
+        // app.py returns 502 + {"error": "..."} when TMDB fails.
+        throw new Error(`Request failed (${res.status})`);
       }
-
+      return res.json();
+    })
+    .then(movie => {
       modalBody.innerHTML = "";
 
       const backdropPath = movie.backdrop_path || movie.poster_path;
@@ -54,9 +61,11 @@ function openMovieModal(movieId) {
       overview.textContent = movie.overview || "No overview available.";
       modalBody.appendChild(overview);
 
-      modal.style.display = "block";
     })
-    .catch(err => console.error("Error fetching movie details:", err));
+    .catch(err => {
+      console.error("Error fetching movie details:", err);
+      modalBody.innerHTML = "<p>Sorry, couldn't load details for this movie right now.</p>";
+    });
 }
 
 document.addEventListener("DOMContentLoaded", function () {
