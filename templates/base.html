@@ -33,52 +33,42 @@
 
 <body>
 
-<header>
-    <div class="header-container">
-        <div class="logo-section">
-            <h1 id="cinesmart-logo">CINESMART</h1>
+<aside id="sidebar">
+    <div id="sidebar-content">
+
+        <div class="logo">
+            <h2>CINESMART</h2>
         </div>
 
-        <div class="sidebar-section">
-            <aside id="sidebar">
-                <div id="sidebar-content">
+        <hr>
 
-                    <div class="logo">
-                        <h2>CINESMART</h2>
-                    </div>
-
-                    <hr>
-
-                    <div class="categories">
-                        <h3>Categories</h3>
-                        <ul>
-                            <li><a href="{{ url_for('popular') }}"><img src="../static/popular.jpg"> Popular</a></li>
-                            <li><a href="{{ url_for('top_rated') }}"><img src="../static/top rated.jpg"> Top Rated</a></li>
-                            <li><a href="{{ url_for('upcoming') }}"><img src="../static/upcoming.jpg"> Upcoming</a></li>
-                        </ul>
-                    </div>
-
-                    <div class="genres">
-                        <h3>Genres</h3>
-                        <ul>
-                            <li><a href="{{ url_for('action') }}"><img src="../static/action.jpg"> Action</a></li>
-                            <li><a href="{{ url_for('adventure') }}"><img src="../static/adventure.jpg"> Adventure</a></li>
-                            <li><a href="{{ url_for('animation') }}"><img src="../static/animation.jpg"> Animation</a></li>
-                            <li><a href="{{ url_for('comedy') }}"><img src="../static/comedy.jpg"> Comedy</a></li>
-                            <li><a href="{{ url_for('drama') }}"><img src="../static/drama.jpg"> Drama</a></li>
-                            <li><a href="{{ url_for('fantasy') }}"><img src="../static/fantasy.jpg"> Fantasy</a></li>
-                            <li><a href="{{ url_for('horror') }}"><img src="../static/horror.jpg"> Horror</a></li>
-                            <li><a href="{{ url_for('mystery') }}"><img src="../static/mystery.jpg"> Mystery</a></li>
-                            <li><a href="{{ url_for('romance') }}"><img src="../static/romance.jpg"> Romance</a></li>
-                            <li><a href="{{ url_for('scifi') }}"><img src="../static/sci-fi.jpg"> Sci-Fi</a></li>
-                        </ul>
-                    </div>
-
-                </div>
-            </aside>
+        <div class="categories">
+            <h3>Categories</h3>
+            <ul>
+                <li><a href="{{ url_for('popular') }}"><img src="../static/popular.jpg"> Popular</a></li>
+                <li><a href="{{ url_for('top_rated') }}"><img src="../static/top rated.jpg"> Top Rated</a></li>
+                <li><a href="{{ url_for('upcoming') }}"><img src="../static/upcoming.jpg"> Upcoming</a></li>
+            </ul>
         </div>
+
+        <div class="genres">
+            <h3>Genres</h3>
+            <ul>
+                <li><a href="{{ url_for('action') }}"><img src="../static/action.jpg"> Action</a></li>
+                <li><a href="{{ url_for('adventure') }}"><img src="../static/adventure.jpg"> Adventure</a></li>
+                <li><a href="{{ url_for('animation') }}"><img src="../static/animation.jpg"> Animation</a></li>
+                <li><a href="{{ url_for('comedy') }}"><img src="../static/comedy.jpg"> Comedy</a></li>
+                <li><a href="{{ url_for('drama') }}"><img src="../static/drama.jpg"> Drama</a></li>
+                <li><a href="{{ url_for('fantasy') }}"><img src="../static/fantasy.jpg"> Fantasy</a></li>
+                <li><a href="{{ url_for('horror') }}"><img src="../static/horror.jpg"> Horror</a></li>
+                <li><a href="{{ url_for('mystery') }}"><img src="../static/mystery.jpg"> Mystery</a></li>
+                <li><a href="{{ url_for('romance') }}"><img src="../static/romance.jpg"> Romance</a></li>
+                <li><a href="{{ url_for('scifi') }}"><img src="../static/sci-fi.jpg"> Sci-Fi</a></li>
+            </ul>
+        </div>
+
     </div>
-</header>
+</aside>
 
 <div id="auth-buttons">
     {% if username %}
