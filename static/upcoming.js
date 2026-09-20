@@ -24,7 +24,7 @@ document.addEventListener("DOMContentLoaded", function () {
           <p>⭐ ${movie.vote_average}</p>
         `;
 
-        card.addEventListener("click", () => openMovie(movie.id));
+        card.addEventListener("click", () => openMovieModal(movie.id));
 
         container.appendChild(card);
       });
