@@ -23,7 +23,7 @@ document.addEventListener("DOMContentLoaded", function () {
           <p>⭐ ${movie.vote_average}</p>
         `;
 
-        card.onclick = () => openMovie(movie.id);
+        card.onclick = () => openMovieModal(movie.id);
         container.appendChild(card);
       });
     });
