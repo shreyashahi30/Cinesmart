@@ -1,15 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-<section id="search">
-    <input type="text" id="search-bar" placeholder="Search for movies...">
-</section>
-
 <section id="movie-list">
     <div id="movies"></div>
 </section>
-{% endblock %}
-
-{% block scripts %}
-<script src="{{ url_for('static', filename='js/script_search.js') }}"></script>
 {% endblock %}
