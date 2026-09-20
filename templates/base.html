@@ -28,13 +28,6 @@
             flex-wrap: wrap;
             gap: 20px;
         }
-
-        df-messenger {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            z-index: 9999;
-        }
     </style>
 </head>
 
@@ -96,14 +89,31 @@
     {% block content %}{% endblock %}
 </main>
 
-<script src="https://www.gstatic.com/dialogflow-console/fast/messenger/bootstrap.js?v=1"></script>
+<!-- Movie detail modal (used by popular/genre/top/upcoming/search cards) -->
+<div id="movie-detail-modal" class="modal">
+    <div class="modal-content">
+        <span class="close" id="close-modal">&times;</span>
+        <div id="modal-body"></div>
+    </div>
+</div>
 
-<df-messenger
-  intent="WELCOME"
-  chat-title="CineBot"
-  agent-id="6e8067d1-9c19-42eb-8f77-80babcc63bde"
-  language-code="en">
-</df-messenger>
+<!-- CineBot chat widget (self-contained, talks to our own /chatbot endpoint) -->
+<div id="chatbot-toggle" title="Chat with CineBot">💬</div>
+
+<div id="chatbot-window">
+    <div id="chatbot-header">
+        <span>CineBot 🎬</span>
+        <span id="chatbot-close">&times;</span>
+    </div>
+    <div id="chatbot-messages"></div>
+    <form id="chatbot-form">
+        <input type="text" id="chatbot-input" placeholder="Ask about a movie..." autocomplete="off">
+        <button type="submit">Send</button>
+    </form>
+</div>
+
+<script src="{{ url_for('static', filename='js/movie-modal.js') }}"></script>
+<script src="{{ url_for('static', filename='js/chatbot.js') }}"></script>
 
 {% block scripts %}{% endblock %}
 
