@@ -138,12 +138,13 @@ body {
 }
 
 #auth-buttons {
-    width: 97%;
     display: flex;
-    justify-content:right;
+    justify-content: flex-end;
+    align-items: center;
     padding: 10px 20px;
     position: fixed;
     top: 15px;
+    right: 20px;
     z-index: 1500;
 }
 
