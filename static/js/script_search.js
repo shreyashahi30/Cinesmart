@@ -33,13 +33,17 @@ searchBar.addEventListener("input", function () {
                         ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
                         : "/static/default.jpg";
 
-                    movieList.innerHTML += `
-                        <div class="movie-card">
-                            <img src="${poster}" width="120">
-                            <h3>${movie.title}</h3>
-                            <p>⭐ ${movie.vote_average}</p>
-                        </div>
+                    const card = document.createElement("div");
+                    card.className = "movie-card";
+                    card.innerHTML = `
+                        <img src="${poster}" width="120">
+                        <h3>${movie.title}</h3>
+                        <p>⭐ ${movie.vote_average}</p>
                     `;
+
+                    card.addEventListener("click", () => openMovieModal(movie.id));
+
+                    movieList.appendChild(card);
                 });
 
             })
