@@ -1,43 +1,32 @@
 document.addEventListener("DOMContentLoaded", function () {
 
-  const searchInput = document.getElementById("search-bar");
   const container = document.getElementById("movies");
+  if (!container) return;
 
-  if (!searchInput || !container) return;
+  fetch("/api/popular")
+    .then(res => res.json())
+    .then(data => {
 
-  searchInput.addEventListener("keyup", function () {
+      container.innerHTML = "";
 
-    const query = searchInput.value.trim();
+      data.results.forEach(movie => {
+        const card = document.createElement("div");
+        card.className = "movie-card";
 
-    if (query.length < 2) return;
+        const poster = movie.poster_path
+          ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
+          : "/static/default.jpg";
 
-    fetch(`/search?query=${query}`)
-      .then(res => res.json())
-      .then(data => {
+        card.innerHTML = `
+          <img src="${poster}">
+          <h3>${movie.title}</h3>
+          <p>⭐ ${movie.vote_average}</p>
+        `;
 
-        container.innerHTML = "";
+        card.addEventListener("click", () => openMovieModal(movie.id));
 
-        data.forEach(movie => {
-
-          const card = document.createElement("div");
-          card.className = "movie-card";
-
-          const poster = movie.poster_path
-            ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
-            : "/static/default.jpg";
-
-          card.innerHTML = `
-            <img src="${poster}">
-            <h3>${movie.title}</h3>
-            <p>⭐ ${movie.vote_average}</p>
-          `;
-
-          card.addEventListener("click", () => openMovieModal(movie.id));
-
-          container.appendChild(card);
-        });
+        container.appendChild(card);
       });
-
-  });
+    });
 
 });
