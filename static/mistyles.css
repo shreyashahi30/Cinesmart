@@ -558,3 +558,30 @@ main {
     color: #fff;
     cursor: pointer;
 }
+
+/* ----------------------------- */
+/* Logged-in user greeting       */
+/* ----------------------------- */
+#welcome-user {
+    color: #fff;
+    font-weight: bold;
+    margin-right: 10px;
+    align-self: center;
+}
+
+#logout-button {
+    padding: 10px 20px;
+    background: linear-gradient(to bottom,#8A0303,#8A0303,#700404,#3C0606,#220707,#080808);
+    color: #ffffff;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    text-transform: uppercase;
+    border-radius: 5px;
+    font-size: 16px;
+    margin-left: 10px;
+}
+
+#logout-button:hover {
+    background-color: #ff4444;
+}
